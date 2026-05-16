@@ -44,8 +44,8 @@ public class Task {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_id", nullable = false)
-    private User assignedUser;
+    @JoinColumn(name = "assignee_id", nullable = false)
+    private User assigneeUser;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
