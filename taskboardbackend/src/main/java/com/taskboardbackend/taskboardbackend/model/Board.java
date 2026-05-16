@@ -19,16 +19,16 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Columns(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Columns(nullable = false)
     private String description;
 
-    @Column(name = "created_at")
+    @Columns(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "updated_at")
+    @Columns(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

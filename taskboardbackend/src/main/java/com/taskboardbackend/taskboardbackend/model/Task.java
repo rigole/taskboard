@@ -36,7 +36,11 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "column_id", nullable = false)
-    private Columns columns;
+    private Columns column;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
