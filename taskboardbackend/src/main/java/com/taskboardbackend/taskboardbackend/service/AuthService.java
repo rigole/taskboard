@@ -27,7 +27,7 @@ public class AuthService {
             throw new UsernameNotFoundException("Email already exists");
         }
 
-        User user = new User().builder()
+        User user = User.builder()
                 .fullName(registerRequest.getFullName())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
