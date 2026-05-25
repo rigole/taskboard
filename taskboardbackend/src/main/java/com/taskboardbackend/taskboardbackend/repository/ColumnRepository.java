@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.UUID;
 
-public interface ColumnRepository extends JpaRepository<Columns, Integer> {
+public interface ColumnRepository extends JpaRepository<Columns, UUID> {
     List<Columns> findByBoardId(UUID boardId);
+
+    List<Columns> findByPosition(Integer position);
 }

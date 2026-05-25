@@ -1,23 +1,24 @@
 package com.taskboardbackend.taskboardbackend.dto.request;
 
+
+import com.taskboardbackend.taskboardbackend.model.Board;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class BoardRequest {
+@NoArgsConstructor
+public class ColumnRequest {
+
+    private Integer position;
 
     @NotNull(message = "Name is required")
     private String name;
 
-    private String description;
-
-    private LocalDateTime updateDate;
+    private UUID boardId;
 
 }

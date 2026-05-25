@@ -1,0 +1,56 @@
+package com.taskboardbackend.taskboardbackend.service;
+
+
+import com.taskboardbackend.taskboardbackend.dto.request.ColumnRequest;
+import com.taskboardbackend.taskboardbackend.dto.response.BoardResponse;
+import com.taskboardbackend.taskboardbackend.dto.response.ColumnResponse;
+import com.taskboardbackend.taskboardbackend.model.Board;
+import com.taskboardbackend.taskboardbackend.model.Columns;
+import com.taskboardbackend.taskboardbackend.repository.BoardRepository;
+import com.taskboardbackend.taskboardbackend.repository.ColumnRepository;
+
+import java.util.List;
+import java.util.UUID;
+
+public class ColumnsService {
+
+    private ColumnRepository columnRepository;
+    private BoardRepository boardRepository;
+
+
+    public List<Columns> getAllColumns(UUID boardId){
+        return columnRepository.findByBoardId(boardId);
+    }
+
+    public ColumnResponse createColumn(ColumnRequest columnRequest){
+        Board boardColumn = boardRepository.findById(columnRequest.getBoardId()).get();
+        Columns columns = Columns.builder()
+                .name(columnRequest.getName())
+                .board(boardColumn)
+                .position(columnRequest.getPosition())
+                .build();
+     return mapToResponse(columnRepository.save(columns));
+    }
+
+    public void deleteColumn(UUID columnId){
+        columnRepository.deleteById(columnId);
+    }
+
+
+
+    private ColumnResponse mapToResponse(Columns columns) {
+        return ColumnResponse.builder()
+                .name(columns.getName())
+                .createdAt(columns.getCreatedAt())
+                .updatedAt(columns.getUpdatedAt())
+                .position(columns.getPosition())
+                .build();
+    }
+
+
+
+
+
+
+
+}
