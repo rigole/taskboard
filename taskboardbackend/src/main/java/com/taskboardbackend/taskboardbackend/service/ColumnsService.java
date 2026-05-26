@@ -23,7 +23,9 @@ public class ColumnsService {
     }
 
     public ColumnResponse createColumn(ColumnRequest columnRequest){
-        Board boardColumn = boardRepository.findById(columnRequest.getBoardId()).get();
+        Board boardColumn = boardRepository.findById(columnRequest.getBoardId())
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+        
         Columns columns = Columns.builder()
                 .name(columnRequest.getName())
                 .board(boardColumn)

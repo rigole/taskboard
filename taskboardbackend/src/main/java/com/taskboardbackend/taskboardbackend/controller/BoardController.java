@@ -36,5 +36,10 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
-    //public ResponseEntity<BoardResponse> updateBoard(@Valid @RequestBody BoardRequest boardRequest) {}
+    public ResponseEntity<BoardResponse> updateBoard(@PathVariable UUID id,
+                                                     @RequestBody BoardRequest boardRequest,
+                                                     @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(boardService.updateBoard(id, boardRequest, user));
+
+    }
 }
