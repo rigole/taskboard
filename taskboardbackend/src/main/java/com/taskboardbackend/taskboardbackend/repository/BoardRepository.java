@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public interface BoardRepository extends JpaRepository<Board, UUID> {
     List<Board> findByUserId(UUID id);
+
     List<Board> findAllByUserIdOrderByCreatedAtDesc(UUID id);
+
     List<Board> findAllByNameOrderByCreatedAtDesc(String name);
 }

@@ -8,6 +8,8 @@ import com.taskboardbackend.taskboardbackend.model.Board;
 import com.taskboardbackend.taskboardbackend.model.Columns;
 import com.taskboardbackend.taskboardbackend.repository.BoardRepository;
 import com.taskboardbackend.taskboardbackend.repository.ColumnRepository;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,17 +17,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ColumnsService {
 
     private ColumnRepository columnRepository;
     private BoardRepository boardRepository;
 
 
-    public List<ColumnResponse> getAllColumns(UUID boardId){
+    public List<ColumnResponse> getAllColumns(UUID boardId) {
         return columnRepository.findByBoardId(boardId).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
-    public ColumnResponse createColumn(ColumnRequest columnRequest){
+    public ColumnResponse createColumn(ColumnRequest columnRequest) {
         Board boardColumn = boardRepository.findById(columnRequest.getBoardId())
                 .orElseThrow(() -> new RuntimeException("Board not found"));
         Columns columns = Columns.builder()
@@ -33,27 +36,23 @@ public class ColumnsService {
                 .board(boardColumn)
                 .position(columnRequest.getPosition())
                 .build();
-     return mapToResponse(columnRepository.save(columns));
+        return mapToResponse(columnRepository.save(columns));
     }
 
-    public void deleteColumn(UUID columnId){
+    public void deleteColumn(UUID columnId) {
         columnRepository.deleteById(columnId);
     }
 
 
     private ColumnResponse mapToResponse(Columns columns) {
         return ColumnResponse.builder()
+                .id(columns.getId())
                 .name(columns.getName())
                 .createdAt(columns.getCreatedAt())
                 .updatedAt(columns.getUpdatedAt())
                 .position(columns.getPosition())
                 .build();
     }
-
-
-
-
-
 
 
 }

@@ -68,6 +68,7 @@ public class BoardService {
 
     private BoardResponse mapToResponse(Board board) {
         return BoardResponse.builder()
+                .id(board.getId())
                 .name(board.getName())
                 .createdAt(board.getCreatedAt())
                 .description(board.getDescription())

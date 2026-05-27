@@ -1,9 +1,6 @@
 package com.taskboardbackend.taskboardbackend.controller;
 
-
-
 import com.taskboardbackend.taskboardbackend.dto.response.ColumnResponse;
-import com.taskboardbackend.taskboardbackend.model.Board;
 import com.taskboardbackend.taskboardbackend.service.ColumnsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

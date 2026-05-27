@@ -1,0 +1,84 @@
+package com.taskboardbackend.taskboardbackend.service;
+
+
+import com.taskboardbackend.taskboardbackend.dto.request.TaskRequest;
+import com.taskboardbackend.taskboardbackend.dto.response.TaskResponse;
+import com.taskboardbackend.taskboardbackend.model.Columns;
+import com.taskboardbackend.taskboardbackend.model.Task;
+import com.taskboardbackend.taskboardbackend.model.User;
+import com.taskboardbackend.taskboardbackend.repository.ColumnRepository;
+import com.taskboardbackend.taskboardbackend.repository.TaskRepository;
+import com.taskboardbackend.taskboardbackend.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class TaskService {
+    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
+    private final ColumnRepository columnRepository;
+
+    public List<TaskResponse> getTasksByAssignee(User user) {
+        return taskRepository.findByAssigneeUserId(user.getId()).
+                stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskResponse> getTasksByCreator(User user) {
+        return taskRepository.findByCreatedById(user.getId())
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public TaskResponse createTask(TaskRequest taskRequest) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User taskCreatorEmail = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        User taskAssignee = userRepository
+                .findByFullNameEqualsIgnoreCase(taskRequest.getAssignee())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Columns columnTask = columnRepository.findByNameEqualsIgnoreCase(taskRequest.getColumn())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        Task task = Task.builder()
+                .createdBy(taskCreatorEmail)
+                .description(taskRequest.getDescription())
+                .priority(taskRequest.getPriority())
+                .title(taskRequest.getTitle())
+                .assigneeUser(taskAssignee)
+                .dueDate(taskRequest.getDueDate())
+                .createdAt(taskRequest.getCreatedAt())
+                .position(taskRequest.getPosition())
+                .column(columnTask)
+                .updatedAt(taskRequest.getUpdatedAt())
+                .build();
+
+        return mapToResponse(taskRepository.save(task));
+
+    }
+
+    private TaskResponse mapToResponse(Task task) {
+        return TaskResponse.builder()
+                .id(task.getId())
+                .description(task.getDescription())
+                .createdAt(task.getCreatedAt())
+                .createdBy(task.getCreatedBy())
+                .title(task.getTitle())
+                .priority(task.getPriority())
+                .dueDate(task.getDueDate())
+                .position(task.getPosition())
+                .assignee(task.getAssigneeUser())
+                .updatedAt(task.getUpdatedAt())
+                .build();
+
+
+    }
+}

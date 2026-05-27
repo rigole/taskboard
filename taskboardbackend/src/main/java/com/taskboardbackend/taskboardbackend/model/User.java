@@ -31,7 +31,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    private String role= "USER";
+    private String role = "USER";
 
     @Column(name = "name", nullable = false)
     private String fullName;
@@ -58,6 +58,7 @@ public class User implements UserDetails {
     public String getUsername() {
         return email;
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
