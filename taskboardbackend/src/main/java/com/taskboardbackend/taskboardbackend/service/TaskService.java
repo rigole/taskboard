@@ -23,15 +23,16 @@ public class TaskService {
     private final UserRepository userRepository;
     private final ColumnRepository columnRepository;
 
-    public List<TaskResponse> getTasksByAssignee(User user) {
-        return taskRepository.findByAssigneeUserId(user.getId()).
+    public List<TaskResponse> getTasksByAssignee(String assignee) {
+
+        return taskRepository.findByAssigneeUserFullNameIgnoreCase(assignee).
                 stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<TaskResponse> getTasksByCreator(User user) {
-        return taskRepository.findByCreatedById(user.getId())
+    public List<TaskResponse> getTasksByCreator(String createdBy) {
+        return taskRepository.findByCreatedByFullNameIgnoreCase(createdBy)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -43,9 +44,9 @@ public class TaskService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         User taskAssignee = userRepository
                 .findByFullNameEqualsIgnoreCase(taskRequest.getAssignee())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Assignee not found"));
         Columns columnTask = columnRepository.findByNameEqualsIgnoreCase(taskRequest.getColumn())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Column not found"));
 
 
         Task task = Task.builder()
@@ -63,6 +64,46 @@ public class TaskService {
 
         return mapToResponse(taskRepository.save(task));
 
+    }
+
+    public TaskResponse updateTask(UUID taskId, TaskRequest taskRequest, User user) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        if (!task.getCreatedBy().getId().equals(user.getId())) {
+            throw new RuntimeException("User not authorized");
+        }
+
+
+        if (taskRequest.getColumn() != null) {
+            Columns columnTask = columnRepository.findByNameEqualsIgnoreCase(taskRequest.getColumn())
+                    .orElseThrow(() -> new RuntimeException("Column not found"));
+            task.setColumn(columnTask);
+        }
+
+        if (taskRequest.getAssignee() != null) {
+            User taskAssignee = userRepository
+                    .findByFullNameEqualsIgnoreCase(taskRequest.getAssignee())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            task.setAssigneeUser(taskAssignee);
+        }
+
+
+        task.setDescription(taskRequest.getDescription());
+        task.setTitle(taskRequest.getTitle());
+        task.setPriority(taskRequest.getPriority());
+        task.setTitle(taskRequest.getTitle());
+        task.setUpdatedAt(taskRequest.getUpdatedAt());
+        task.setPosition(taskRequest.getPosition());
+        return mapToResponse(taskRepository.save(task));
+
+    }
+
+    public void deleteTask(UUID taskId, User user) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!task.getCreatedBy().getId().equals(user.getId())) {
+            throw new RuntimeException("User not authorized");
+        }
+        taskRepository.delete(task);
     }
 
     private TaskResponse mapToResponse(Task task) {
