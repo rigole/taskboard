@@ -8,24 +8,26 @@ import com.taskboardbackend.taskboardbackend.model.Board;
 import com.taskboardbackend.taskboardbackend.model.Columns;
 import com.taskboardbackend.taskboardbackend.repository.BoardRepository;
 import com.taskboardbackend.taskboardbackend.repository.ColumnRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+@Service
 public class ColumnsService {
 
     private ColumnRepository columnRepository;
     private BoardRepository boardRepository;
 
 
-    public List<Columns> getAllColumns(UUID boardId){
-        return columnRepository.findByBoardId(boardId);
+    public List<ColumnResponse> getAllColumns(UUID boardId){
+        return columnRepository.findByBoardId(boardId).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     public ColumnResponse createColumn(ColumnRequest columnRequest){
         Board boardColumn = boardRepository.findById(columnRequest.getBoardId())
                 .orElseThrow(() -> new RuntimeException("Board not found"));
-        
         Columns columns = Columns.builder()
                 .name(columnRequest.getName())
                 .board(boardColumn)
@@ -37,7 +39,6 @@ public class ColumnsService {
     public void deleteColumn(UUID columnId){
         columnRepository.deleteById(columnId);
     }
-
 
 
     private ColumnResponse mapToResponse(Columns columns) {
