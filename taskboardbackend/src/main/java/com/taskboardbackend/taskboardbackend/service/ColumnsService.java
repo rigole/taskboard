@@ -6,6 +6,7 @@ import com.taskboardbackend.taskboardbackend.dto.response.BoardResponse;
 import com.taskboardbackend.taskboardbackend.dto.response.ColumnResponse;
 import com.taskboardbackend.taskboardbackend.model.Board;
 import com.taskboardbackend.taskboardbackend.model.Columns;
+import com.taskboardbackend.taskboardbackend.model.User;
 import com.taskboardbackend.taskboardbackend.repository.BoardRepository;
 import com.taskboardbackend.taskboardbackend.repository.ColumnRepository;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,11 @@ public class ColumnsService {
         return mapToResponse(columnRepository.save(columns));
     }
 
-    public void deleteColumn(UUID columnId) {
+    public void deleteColumn(UUID columnId, User user) {
+        Columns columns = columnRepository.findById(columnId).orElseThrow(() -> new RuntimeException("Column not found"));
+        if (!columns.getBoard().getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized");
+        }
         columnRepository.deleteById(columnId);
     }
 

@@ -2,12 +2,16 @@ package com.taskboardbackend.taskboardbackend.dto.request;
 
 import com.taskboardbackend.taskboardbackend.model.User;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TaskRequest {
 
     @NotNull(message = "Title is required")
@@ -24,8 +28,6 @@ public class TaskRequest {
     private LocalDateTime dueDate;
 
     private Integer position;
-
-    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String column;
 }

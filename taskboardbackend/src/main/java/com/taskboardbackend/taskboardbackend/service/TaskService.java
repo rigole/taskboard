@@ -56,7 +56,6 @@ public class TaskService {
                 .title(taskRequest.getTitle())
                 .assigneeUser(taskAssignee)
                 .dueDate(taskRequest.getDueDate())
-                .createdAt(taskRequest.getCreatedAt())
                 .position(taskRequest.getPosition())
                 .column(columnTask)
                 .updatedAt(taskRequest.getUpdatedAt())
