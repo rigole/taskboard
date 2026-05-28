@@ -71,9 +71,9 @@ This is an **Advanced Task Management Board** - similar to Asana, Trello, or Mon
 | **React** | UI framework | 18.x |
 | **Redux/Zustand** | State management | Latest |
 | **Axios** | HTTP client | Latest |
-| **React Beautiful DnD** | Drag-and-drop | Latest |
+| **dnd-kit** | Drag-and-drop | Latest |
 | **React Router** | Client-side routing | 6.x |
-| **Tailwind CSS** | Styling | 3.x |
+| **Tailwind CSS** | Styling | 4.x |
 | **Vite** | Build tool | Latest |
 
 ### Backend
@@ -126,8 +126,8 @@ task-management-board/
 │   ├── package.json                 # Node dependencies
 │   ├── vite.config.js               # Vite configuration
 │   ├── src/
-│   │   ├── App.jsx                  # Main app component
-│   │   ├── main.jsx                 # Entry point
+│   │   ├── App.tsx                  # Main app component
+│   │   ├── main.tsx                 # Entry point
 │   │   ├── pages/                   # Page components
 │   │   ├── components/              # Reusable components
 │   │   ├── store/                   # State management (Redux/Zustand)
@@ -667,12 +667,12 @@ We welcome contributions! Here's how:
 
 ## 📋 Checklist for Portfolio
 
-- [ ] Clean code without hardcoded values
-- [ ] Comprehensive error handling
-- [ ] Input validation on frontend & backend
-- [ ] JWT authentication working
-- [ ] Database migrations in place
-- [ ] All CRUD operations implemented
+- [x] Clean code without hardcoded values
+- [x] Comprehensive error handling
+- [x] Input validation on frontend & backend
+- [x] JWT authentication working
+- [x] Database migrations in place
+- [x] All CRUD operations implemented
 - [ ] Drag-and-drop functionality
 - [ ] Search/filter features
 - [ ] Responsive design
