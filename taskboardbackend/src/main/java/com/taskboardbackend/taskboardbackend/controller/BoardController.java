@@ -36,6 +36,7 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/{id}")
     public ResponseEntity<BoardResponse> updateBoard(@PathVariable UUID id,
                                                      @RequestBody BoardRequest boardRequest,
                                                      @AuthenticationPrincipal User user) {

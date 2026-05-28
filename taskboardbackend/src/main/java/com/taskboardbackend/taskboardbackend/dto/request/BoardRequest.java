@@ -15,9 +15,7 @@ public class BoardRequest {
 
     @NotNull(message = "Name is required")
     private String name;
-
     private String description;
-
     private LocalDateTime updateDate;
 
 }

@@ -19,17 +19,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BoardService {
 
-    private UserRepository  userRepository;
-    private BoardRepository boardRepository;
+    private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
 
-    public List<BoardResponse> getAllBoards(User user){
+    public List<BoardResponse> getAllBoards(User user) {
         return boardRepository.findAllByUserIdOrderByCreatedAtDesc(user.getId())
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    public BoardResponse createBoard(BoardRequest boardRequest){
+    public BoardResponse createBoard(BoardRequest boardRequest) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User boardUser = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
@@ -45,7 +45,7 @@ public class BoardService {
     }
 
 
-    public BoardResponse updateBoard(UUID boardId, BoardRequest boardRequest, User user){
+    public BoardResponse updateBoard(UUID boardId, BoardRequest boardRequest, User user) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
         if (!board.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("User not the same user");
@@ -56,7 +56,7 @@ public class BoardService {
         return mapToResponse(boardRepository.save(board));
     }
 
-    public void deleteBoard(UUID id, User user){
+    public void deleteBoard(UUID id, User user) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new RuntimeException("Board not found"));
         if (board.getUser().getId().equals(user.getId())) {
             boardRepository.delete(board);

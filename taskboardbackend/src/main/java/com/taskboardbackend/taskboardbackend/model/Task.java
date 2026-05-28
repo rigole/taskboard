@@ -31,7 +31,7 @@ public class Task {
     @Column(nullable = false)
     private String priority;
 
-    @Column(nullable = false, name = "due_date")
+    @Column(name = "due_date")
     private LocalDateTime dueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,10 +47,21 @@ public class Task {
     @JoinColumn(name = "assignee_id", nullable = false)
     private User assigneeUser;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
 
 }

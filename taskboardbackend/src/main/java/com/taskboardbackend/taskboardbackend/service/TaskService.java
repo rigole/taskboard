@@ -12,6 +12,7 @@ import com.taskboardbackend.taskboardbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,6 +39,7 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public TaskResponse createTask(TaskRequest taskRequest) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User taskCreatorEmail = userRepository.findByEmail(email)
@@ -65,6 +67,7 @@ public class TaskService {
 
     }
 
+    @Transactional
     public TaskResponse updateTask(UUID taskId, TaskRequest taskRequest, User user) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
         if (!task.getCreatedBy().getId().equals(user.getId())) {
@@ -92,7 +95,8 @@ public class TaskService {
         task.setTitle(taskRequest.getTitle());
         task.setUpdatedAt(taskRequest.getUpdatedAt());
         task.setPosition(taskRequest.getPosition());
-        return mapToResponse(taskRepository.save(task));
+        Task taskUpdated = taskRepository.saveAndFlush(task);
+        return mapToResponse(taskUpdated);
 
     }
 
@@ -110,12 +114,12 @@ public class TaskService {
                 .id(task.getId())
                 .description(task.getDescription())
                 .createdAt(task.getCreatedAt())
-                .createdBy(task.getCreatedBy())
+                .createdBy(task.getCreatedBy().getFullName())
                 .title(task.getTitle())
                 .priority(task.getPriority())
                 .dueDate(task.getDueDate())
                 .position(task.getPosition())
-                .assignee(task.getAssigneeUser())
+                .assignee(task.getAssigneeUser().getFullName())
                 .updatedAt(task.getUpdatedAt())
                 .build();
 

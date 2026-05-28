@@ -14,8 +14,8 @@ public class TaskResponse {
     private String title;
     private String description;
     private String priority;
-    private User assignee;
-    private User createdBy;
+    private String assignee;
+    private String createdBy;
     private LocalDateTime dueDate;
     private Integer position;
     private String column;

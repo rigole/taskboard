@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ColumnsService {
 
-    private ColumnRepository columnRepository;
-    private BoardRepository boardRepository;
+    private final ColumnRepository columnRepository;
+    private final BoardRepository boardRepository;
 
 
     public List<ColumnResponse> getAllColumns(UUID boardId) {

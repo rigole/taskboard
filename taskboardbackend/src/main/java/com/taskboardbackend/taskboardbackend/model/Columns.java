@@ -24,7 +24,7 @@ public class Columns {
     @Column(nullable = false, unique = true)
     private Integer position;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
@@ -33,4 +33,14 @@ public class Columns {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", unique = true, nullable = false)
     private Board board;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
