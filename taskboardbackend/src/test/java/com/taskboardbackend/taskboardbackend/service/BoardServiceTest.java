@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -80,4 +81,20 @@ public class BoardServiceTest {
 
         verify(boardRepository, times(1)).save(any(Board.class));
     }
+
+    @Test
+    @DisplayName("Should return all Board for user")
+    void shouldReturnAllBoardForUser() {
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(mockUser));
+        when(boardRepository.findAllByUserIdOrderByCreatedAtDesc(mockUser.getId())).thenReturn(List.of(mockBoard));
+
+        List<BoardResponse> response = boardService.getAllBoards(mockUser);
+
+        assertNotNull(response);
+        assertEquals("Test Board", response.get(0).getName());
+        assertEquals("Test description", response.get(0).getDescription());
+
+        verify(boardRepository, times(1)).findAllByUserIdOrderByCreatedAtDesc(mockUser.getId());
+    }
+
 }
