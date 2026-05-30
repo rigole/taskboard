@@ -3,7 +3,10 @@ import {
   ClockIcon,
   CheckCircleIcon,
   PlusIcon,
+  MoonIcon,
+  SunIcon,
 } from "@heroicons/react/24/outline";
+import { useThemeStore } from "../store/themeStore.tsx";
 
 const boards = [
   {
@@ -24,53 +27,72 @@ const boards = [
 ];
 
 export const ProfilePage = () => {
+  const { darkMode, toggleTheme } = useThemeStore();
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b px-8 py-6 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Welcome back 👋</h1>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 transition-colors duration-300">
+      <header className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-6 py-4 flex items-center justify-between w-full">
+        <div className="flex items-center gap-3">
+          <div className="bg-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl text-white">
+            T
+          </div>
 
-          <p className="text-gray-500 mt-1">
-            Here's an overview of your workspace.
-          </p>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+              TaskFlow
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Here's an overview of your workspace.
+            </p>
+          </div>
         </div>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={toggleTheme}
+            className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            aria-label="Toggle theme"
+          >
+            {darkMode ? (
+              <SunIcon className="w-5 h-5 text-yellow-500" />
+            ) : (
+              <MoonIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+            )}
+          </button>
 
-        <button className="bg-indigo-600 text-white px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-indigo-500 transition">
-          <PlusIcon className="w-5 h-5" />
-          Create Board
-        </button>
+          <button className="bg-indigo-600 text-white px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-indigo-500 transition shadow-sm font-medium">
+            Create Board
+          </button>
+        </div>
       </header>
 
       <main className="p-8">
-        {/* Stats */}
         <div className="grid md:grid-cols-3 gap-6 mb-10">
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm dark:border dark:border-gray-800">
             <RectangleGroupIcon className="w-10 h-10 text-indigo-600" />
 
             <h3 className="mt-4 text-2xl font-bold">8</h3>
 
-            <p className="text-gray-500">Active Boards</p>
+            <p className="text-gray-500 dark:text-gray-400">Active Boards</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm dark:border dark:border-gray-800">
             <ClockIcon className="w-10 h-10 text-orange-500" />
 
             <h3 className="mt-4 text-2xl font-bold">14</h3>
 
-            <p className="text-gray-500">Tasks In Progress</p>
+            <p className="text-gray-500 dark:text-gray-400">
+              Tasks In Progress
+            </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm dark:border dark:border-gray-800">
             <CheckCircleIcon className="w-10 h-10 text-green-500" />
 
             <h3 className="mt-4 text-2xl font-bold">42</h3>
 
-            <p className="text-gray-500">Tasks Completed</p>
+            <p className="text-gray-500 dark:text-gray-400">Tasks Completed</p>
           </div>
         </div>
 
-        {/* Boards */}
         <section>
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">My Boards</h2>
@@ -82,29 +104,30 @@ export const ProfilePage = () => {
             {boards.map((board) => (
               <div
                 key={board.id}
-                className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer"
+                className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer dark:border dark:border-gray-800"
               >
                 <h3 className="font-semibold text-lg">{board.name}</h3>
 
-                <p className="text-gray-500 mt-3">{board.tasks} tasks</p>
+                <p className="text-gray-500 dark:text-gray-400">
+                  {board.tasks} tasks
+                </p>
               </div>
             ))}
 
-            {/* Create Board Card */}
             <div className="border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center min-h-[140px] cursor-pointer hover:border-indigo-500 transition">
               <div className="text-center">
-                <PlusIcon className="w-8 h-8 mx-auto text-gray-400" />
+                <PlusIcon className="w-8 h-8 mx-auto text-gray-500 dark:text-gray-400" />
 
-                <p className="mt-2 text-gray-500">Create Board</p>
+                <p className="mt-2 text-gray-500 dark:text-gray-400">
+                  Create Board
+                </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Bottom Section */}
         <div className="grid lg:grid-cols-2 gap-6 mt-10">
-          {/* Recent Tasks */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer dark:border dark:border-gray-800">
             <h2 className="text-xl font-bold mb-4">Recent Tasks</h2>
 
             <div className="space-y-4">
@@ -125,9 +148,10 @@ export const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Upcoming Deadlines */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 className="text-xl font-bold mb-4">Upcoming Deadlines</h2>
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer dark:border dark:border-gray-800">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Upcoming Deadlines
+            </h2>
 
             <div className="space-y-4">
               <div>
@@ -145,7 +169,9 @@ export const ProfilePage = () => {
               <div>
                 <p className="font-medium">Write Documentation</p>
 
-                <p className="text-sm text-gray-500">Due next week</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Due next week
+                </p>
               </div>
             </div>
           </div>
@@ -154,5 +180,3 @@ export const ProfilePage = () => {
     </div>
   );
 };
-
-

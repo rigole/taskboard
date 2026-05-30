@@ -5,8 +5,15 @@ import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage.tsx";
 import { Toaster } from "react-hot-toast";
 import { ProfilePage } from "./pages/ProfilePage.tsx";
+import { useThemeStore } from "./store/themeStore.tsx";
+import { useEffect } from "react";
 
 function App() {
+  const darkMode = useThemeStore((state) => state.darkMode);
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
   return (
     <>
       <Toaster position="top-right" />
