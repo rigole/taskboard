@@ -1,0 +1,158 @@
+import {
+  RectangleGroupIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
+
+const boards = [
+  {
+    id: 1,
+    name: "Task Management App",
+    tasks: 24,
+  },
+  {
+    id: 2,
+    name: "Portfolio Website",
+    tasks: 12,
+  },
+  {
+    id: 3,
+    name: "CRM Project",
+    tasks: 35,
+  },
+];
+
+export const ProfilePage = () => {
+  return (
+    <div className="min-h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-white border-b px-8 py-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Welcome back 👋</h1>
+
+          <p className="text-gray-500 mt-1">
+            Here's an overview of your workspace.
+          </p>
+        </div>
+
+        <button className="bg-indigo-600 text-white px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-indigo-500 transition">
+          <PlusIcon className="w-5 h-5" />
+          Create Board
+        </button>
+      </header>
+
+      <main className="p-8">
+        {/* Stats */}
+        <div className="grid md:grid-cols-3 gap-6 mb-10">
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <RectangleGroupIcon className="w-10 h-10 text-indigo-600" />
+
+            <h3 className="mt-4 text-2xl font-bold">8</h3>
+
+            <p className="text-gray-500">Active Boards</p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <ClockIcon className="w-10 h-10 text-orange-500" />
+
+            <h3 className="mt-4 text-2xl font-bold">14</h3>
+
+            <p className="text-gray-500">Tasks In Progress</p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <CheckCircleIcon className="w-10 h-10 text-green-500" />
+
+            <h3 className="mt-4 text-2xl font-bold">42</h3>
+
+            <p className="text-gray-500">Tasks Completed</p>
+          </div>
+        </div>
+
+        {/* Boards */}
+        <section>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">My Boards</h2>
+
+            <button className="text-indigo-600 font-medium">View All</button>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {boards.map((board) => (
+              <div
+                key={board.id}
+                className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer"
+              >
+                <h3 className="font-semibold text-lg">{board.name}</h3>
+
+                <p className="text-gray-500 mt-3">{board.tasks} tasks</p>
+              </div>
+            ))}
+
+            {/* Create Board Card */}
+            <div className="border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center min-h-[140px] cursor-pointer hover:border-indigo-500 transition">
+              <div className="text-center">
+                <PlusIcon className="w-8 h-8 mx-auto text-gray-400" />
+
+                <p className="mt-2 text-gray-500">Create Board</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Bottom Section */}
+        <div className="grid lg:grid-cols-2 gap-6 mt-10">
+          {/* Recent Tasks */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <h2 className="text-xl font-bold mb-4">Recent Tasks</h2>
+
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span>Implement JWT Auth</span>
+                <span className="text-orange-500">In Progress</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Create Login Page</span>
+                <span className="text-green-500">Done</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Design Dashboard</span>
+                <span className="text-blue-500">Review</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Upcoming Deadlines */}
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <h2 className="text-xl font-bold mb-4">Upcoming Deadlines</h2>
+
+            <div className="space-y-4">
+              <div>
+                <p className="font-medium">Finish React Frontend</p>
+
+                <p className="text-sm text-red-500">Due Tomorrow</p>
+              </div>
+
+              <div>
+                <p className="font-medium">Deploy Backend</p>
+
+                <p className="text-sm text-orange-500">Due in 3 days</p>
+              </div>
+
+              <div>
+                <p className="font-medium">Write Documentation</p>
+
+                <p className="text-sm text-gray-500">Due next week</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+

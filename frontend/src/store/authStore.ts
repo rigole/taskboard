@@ -27,9 +27,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await authService.register(data);
       set({ user: response, loading: false, error: null });
       localStorage.setItem("token", response.token);
-    } catch (error) {
-      console.error("Registration failed:", error);
-      set({ loading: false, error: "Registration failed" });
+    } catch (error: any) {
+      const serverMessage =
+        error.response?.data?.message || "Invalid data or server error";
+      set({ loading: false, error: serverMessage });
+      throw error;
     }
   },
   login: async (data: LoginRequest) => {
@@ -38,9 +40,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await authService.login(data);
       set({ user: response, loading: false, error: null });
       localStorage.setItem("token", response.token);
-    } catch (error) {
-      console.error("Login failed:", error);
-      set({ loading: false, error: "Login failed" });
+    } catch (error: any) {
+      const serverMessage =
+        error.response?.data?.message || "Invalid credentials";
+      set({ loading: false, error: serverMessage });
+      throw error;
     }
   },
   logout: () => {
