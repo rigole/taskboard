@@ -35,7 +35,8 @@ This is an **Advanced Task Management Board** - similar to Asana, Trello, or Mon
 
 ## ✨ Features
 
-### Core Features 
+### Core Features
+
 - ✅ User authentication (signup/login with JWT)
 - ✅ Create and manage boards
 - ✅ Kanban-style columns (To Do, In Progress, Done)
@@ -44,6 +45,7 @@ This is an **Advanced Task Management Board** - similar to Asana, Trello, or Mon
 - ✅ Task details modal
 
 ### Advanced Features
+
 - ✅ Task assignment to users
 - ✅ Task priority levels (Low, Medium, High)
 - ✅ Due dates for tasks
@@ -52,7 +54,8 @@ This is an **Advanced Task Management Board** - similar to Asana, Trello, or Mon
 - ✅ Task statistics dashboard
 - ✅ Role-based access control (Admin, User)
 
-### Polish Features 
+### Polish Features
+
 - ✅ Responsive design (mobile-friendly)
 - ✅ Dark mode support
 - ✅ Activity history/timeline
@@ -66,35 +69,38 @@ This is an **Advanced Task Management Board** - similar to Asana, Trello, or Mon
 ## 🛠️ Tech Stack
 
 ### Frontend
-| Technology | Purpose | Version |
-|-----------|---------|---------|
-| **React** | UI framework | 18.x |
-| **Redux/Zustand** | State management | Latest |
-| **Axios** | HTTP client | Latest |
-| **dnd-kit** | Drag-and-drop | Latest |
-| **React Router** | Client-side routing | 6.x |
-| **Tailwind CSS** | Styling | 4.x |
-| **Vite** | Build tool | Latest |
+
+| Technology        | Purpose             | Version |
+| ----------------- | ------------------- | ------- |
+| **React**         | UI framework        | 18.x    |
+| **Redux/Zustand** | State management    | Latest  |
+| **Axios**         | HTTP client         | Latest  |
+| **dnd-kit**       | Drag-and-drop       | Latest  |
+| **React Router**  | Client-side routing | 6.x     |
+| **Tailwind CSS**  | Styling             | 4.x     |
+| **Vite**          | Build tool          | Latest  |
 
 ### Backend
-| Technology | Purpose | Version |
-|-----------|---------|---------|
-| **Spring Boot** | Web framework | 3.2.0 |
-| **Spring Security** | Authentication | Latest |
-| **Spring Data JPA** | ORM | Latest |
-| **PostgreSQL** | Database | 12+ |
-| **JWT (JJWT)** | Token authentication | 0.12.3 |
-| **Flyway** | Database migrations | Latest |
-| **Maven** | Build tool | 3.8+ |
+
+| Technology          | Purpose              | Version |
+| ------------------- | -------------------- | ------- |
+| **Spring Boot**     | Web framework        | 3.2.0   |
+| **Spring Security** | Authentication       | Latest  |
+| **Spring Data JPA** | ORM                  | Latest  |
+| **PostgreSQL**      | Database             | 12+     |
+| **JWT (JJWT)**      | Token authentication | 0.12.3  |
+| **Flyway**          | Database migrations  | Latest  |
+| **Maven**           | Build tool           | 3.8+    |
 
 ### Development Tools
-| Tool | Purpose |
-|------|---------|
-| **Git** | Version control |
-| **Docker** | Containerization (optional) |
-| **Postman/Insomnia** | API testing |
-| **VS Code** | Code editor |
-| **IntelliJ IDEA** | Java IDE (optional) |
+
+| Tool                 | Purpose                     |
+| -------------------- | --------------------------- |
+| **Git**              | Version control             |
+| **Docker**           | Containerization (optional) |
+| **Postman/Insomnia** | API testing                 |
+| **VS Code**          | Code editor                 |
+| **IntelliJ IDEA**    | Java IDE (optional)         |
 
 ---
 
@@ -157,23 +163,28 @@ task-management-board/
 Before you begin, ensure you have the following installed:
 
 ### Required
-- **Java 17+** 
+
+- **Java 17+**
+
   ```bash
   java -version
   ```
 
 - **Maven 3.8+**
+
   ```bash
   mvn -version
   ```
 
 - **Node.js 16+** (with npm or yarn)
+
   ```bash
   node --version
   npm --version
   ```
 
 - **PostgreSQL 12+**
+
   ```bash
   psql --version
   ```
@@ -184,6 +195,7 @@ Before you begin, ensure you have the following installed:
   ```
 
 ### Optional but Recommended
+
 - **Docker** (for containerized development)
 - **Postman/Insomnia** (for API testing)
 - **VS Code** or **IntelliJ IDEA** (code editors)
@@ -192,7 +204,6 @@ Before you begin, ensure you have the following installed:
 
 ## 🚀 Quick Start
 
-
 ## 🔧 Backend Setup
 
 ### Detailed Backend Instructions
@@ -200,6 +211,7 @@ Before you begin, ensure you have the following installed:
 #### Step 1: Generate Project (using Spring Initializr)
 
 Visit **https://start.spring.io/** and configure:
+
 - **Project:** Maven
 - **Language:** Java
 - **Spring Boot:** 3.2.0+
@@ -208,6 +220,7 @@ Visit **https://start.spring.io/** and configure:
 - **Artifact:** taskboard-api
 
 **Dependencies to add:**
+
 - Spring Web
 - Spring Security
 - Spring Data JPA
@@ -242,8 +255,8 @@ In `application.yml`, add:
 ```yaml
 jwt:
   secret: your-super-secret-key-at-least-32-characters-long
-  expiration: 900000        
-  refresh-expiration: 604800000  
+  expiration: 900000
+  refresh-expiration: 604800000
 ```
 
 #### Step 4: Build & Run
@@ -265,12 +278,14 @@ curl http://localhost:8080/api/auth
 Base URL: `http://localhost:8080/api`
 
 **Authentication:**
+
 - `POST /auth/signup` - Register new user
 - `POST /auth/login` - Login user
 - `POST /auth/refresh` - Refresh token
 - `POST /auth/logout` - Logout user
 
 **Boards:**
+
 - `GET /boards` - Get all user's boards
 - `GET /boards/{id}` - Get board details
 - `POST /boards` - Create board
@@ -278,12 +293,14 @@ Base URL: `http://localhost:8080/api`
 - `DELETE /boards/{id}` - Delete board
 
 **Columns:**
+
 - `GET /boards/{boardId}/columns` - Get columns
 - `POST /boards/{boardId}/columns` - Create column
 - `PUT /columns/{id}` - Update column
 - `DELETE /columns/{id}` - Delete column
 
 **Tasks:**
+
 - `GET /columns/{columnId}/tasks` - Get tasks
 - `POST /columns/{columnId}/tasks` - Create task
 - `PUT /tasks/{id}` - Update task
@@ -292,6 +309,7 @@ Base URL: `http://localhost:8080/api`
 - `GET /tasks?search=...&priority=...` - Search tasks
 
 **Comments:**
+
 - `GET /tasks/{taskId}/comments` - Get comments
 - `POST /tasks/{taskId}/comments` - Add comment
 - `PUT /comments/{id}` - Update comment
@@ -357,23 +375,23 @@ src/
 │       └── Loader.jsx
 ├── pages/
 │   ├── HomePage.jsx
-│   ├── BoardPage.jsx
+│   ├── ProfilePage.jsx
 │   └── LoginPage.jsx
 ├── store/
-│   ├── authStore.js
-│   ├── boardStore.js
-│   └── taskStore.js
+│   ├── authStore.ts
+│   ├── boardStore.ts
+│   └── taskStore.ts
 ├── services/
-│   ├── api.js
-│   ├── authService.js
-│   ├── boardService.js
-│   └── taskService.js
+│   ├── api.ts
+│   ├── authService.ts
+│   ├── boardService.ts
+│   └── taskService.ts
 ├── hooks/
 │   ├── useAuth.js
 │   └── useFetchBoard.js
 ├── utils/
-│   ├── constants.js
-│   └── helpers.js
+│   ├── constants.ts
+│   └── helpers.ts
 ├── App.jsx
 ├── main.jsx
 └── index.css
@@ -384,9 +402,10 @@ src/
 Create `src/utils/constants.js`:
 
 ```javascript
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
-export const ACCESS_TOKEN_KEY = 'access_token';
-export const REFRESH_TOKEN_KEY = 'refresh_token';
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+export const ACCESS_TOKEN_KEY = "access_token";
+export const REFRESH_TOKEN_KEY = "refresh_token";
 ```
 
 #### Step 5: Run Development Server
@@ -404,22 +423,27 @@ Open `http://localhost:5173`
 ### Tables Overview
 
 **users**
+
 - Stores user accounts
 - Fields: id, email, password, name, role, created_at, updated_at
 
 **boards**
+
 - Stores task boards owned by users
 - Fields: id, name, description, owner_id, created_at, updated_at
 
 **board_columns**
+
 - Stores columns within boards (To Do, In Progress, Done)
 - Fields: id, board_id, name, position, created_at, updated_at
 
 **tasks**
+
 - Stores tasks within columns
 - Fields: id, column_id, title, description, assignee_id, priority, due_date, position, created_by, created_at, updated_at
 
 **comments**
+
 - Stores comments on tasks
 - Fields: id, task_id, author_id, content, created_at, updated_at
 
@@ -471,18 +495,21 @@ See `docs/DATABASE.md` for detailed schema.
 ### Running in Development Mode
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 cd frontend
 npm run dev
 ```
 
 **Terminal 3 - Database (optional):**
+
 ```bash
 psql -U taskboard_user -d taskboard_db
 ```
@@ -492,6 +519,7 @@ psql -U taskboard_user -d taskboard_db
 Using **Postman** or **Insomnia**:
 
 1. **Sign Up**
+
    ```
    POST http://localhost:8080/api/auth/signup
    Content-Type: application/json
@@ -504,6 +532,7 @@ Using **Postman** or **Insomnia**:
    ```
 
 2. **Login**
+
    ```
    POST http://localhost:8080/api/auth/login
    Content-Type: application/json
@@ -515,6 +544,7 @@ Using **Postman** or **Insomnia**:
    ```
 
 3. **Create Board** (requires Authorization header)
+
    ```
    POST http://localhost:8080/api/boards
    Authorization: Bearer {access_token}
@@ -529,13 +559,15 @@ Using **Postman** or **Insomnia**:
 ### Code Formatting
 
 **Backend:**
+
 ```bash
-mvn spotless:apply  
+mvn spotless:apply
 ```
 
 **Frontend:**
+
 ```bash
-npm run format 
+npm run format
 ```
 
 ---
@@ -554,6 +586,7 @@ mvn test -Dtest=AuthControllerTest
 
 mvn test jacoco:report
 ```
+
 ### Frontend Tests
 
 ```bash
@@ -568,9 +601,6 @@ npm run test:coverage
 npm run cypress:open
 ```
 
-
-
-
 ---
 
 ## 🚢 Deployment
@@ -580,6 +610,7 @@ npm run cypress:open
 #### Docker Deployment
 
 1. **Create Dockerfile:**
+
    ```dockerfile
    FROM openjdk:17-jdk-slim
    COPY target/taskboard-api-1.0.0.jar app.jar
@@ -605,6 +636,7 @@ npm run cypress:open
 #### Netlify/Vercel
 
 1. **Build the project:**
+
    ```bash
    npm run build
    ```
@@ -624,6 +656,7 @@ aws s3 sync dist/ s3://your-bucket-name
 ### Environment Variables
 
 **Backend (.env or application-prod.yml):**
+
 ```
 DATABASE_URL=jdbc:postgresql://prod-db:5432/taskboard
 JWT_SECRET=production-secret-key
@@ -631,6 +664,7 @@ SPRING_PROFILE=production
 ```
 
 **Frontend (.env.production):**
+
 ```
 VITE_API_URL=https://api.yourdomain.com
 ```
@@ -696,6 +730,7 @@ We welcome contributions! Here's how:
 By completing this project, you'll have learned:
 
 **Frontend:**
+
 - React hooks and state management
 - Component composition
 - API integration with Axios
@@ -705,6 +740,7 @@ By completing this project, you'll have learned:
 - Form validation
 
 **Backend:**
+
 - Spring Boot REST APIs
 - Spring Security with JWT
 - Database design and JPA
@@ -714,6 +750,7 @@ By completing this project, you'll have learned:
 - Database migrations
 
 **Full-Stack:**
+
 - Authentication flow
 - Request/response handling
 - CORS configuration
@@ -752,7 +789,7 @@ This project is licensed under the MIT License - see `LICENSE` file for details.
 
 ## 🎯 Project Status
 
-**Current Phase:**  Boilerplate Complete
+**Current Phase:** Boilerplate Complete
 
 - [x] Backend structure
 - [x] Database schema
@@ -768,6 +805,7 @@ This project is licensed under the MIT License - see `LICENSE` file for details.
 ## 👨‍💻 Author
 
 **Placide FOLEU**
+
 - LinkedIn: [linkedin.com/in/placide-rigole-foleu](https://www.linkedin.com/in/placide-rigole-foleu/)
 - GitHub: [@rigole](https://github.com/rigole)
 - Email: foplacide@gmail.com
@@ -781,5 +819,3 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 ---
 
 <p align="center">Built with passion using Spring Boot · Angular · PostgreSQL</p>
-
-
