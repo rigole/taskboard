@@ -94,7 +94,7 @@ export const ProfilePage = () => {
         </div>
 
         <section>
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6 text-gray-900 dark:text-white">
             <h2 className="text-2xl font-bold">My Boards</h2>
 
             <button className="text-indigo-600 font-medium">View All</button>
@@ -106,7 +106,7 @@ export const ProfilePage = () => {
                 key={board.id}
                 className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer dark:border dark:border-gray-800"
               >
-                <h3 className="font-semibold text-lg">{board.name}</h3>
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{board.name}</h3>
 
                 <p className="text-gray-500 dark:text-gray-400">
                   {board.tasks} tasks
