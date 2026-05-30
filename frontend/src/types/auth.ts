@@ -15,7 +15,6 @@ export interface LoginRequest {
   password: string;
 }
 
-
 export interface AuthResponse {
   token: string;
   fullName: string;
