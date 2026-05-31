@@ -5,7 +5,6 @@ import {
   ClockIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
-
 export const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -14,7 +13,6 @@ export const HomePage = () => {
           <div className="bg-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl">
             T
           </div>
-
           <h1 className="text-2xl font-bold">TaskFlow</h1>
         </div>
 

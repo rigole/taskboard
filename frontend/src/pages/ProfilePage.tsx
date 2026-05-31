@@ -38,7 +38,7 @@ export const ProfilePage = () => {
 
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-              TaskFlow
+              Welcome user!
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Here's an overview of your workspace.
@@ -69,7 +69,9 @@ export const ProfilePage = () => {
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm dark:border dark:border-gray-800">
             <RectangleGroupIcon className="w-10 h-10 text-indigo-600" />
 
-            <h3 className="mt-4 text-2xl font-bold">8</h3>
+            <h3 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
+              8
+            </h3>
 
             <p className="text-gray-500 dark:text-gray-400">Active Boards</p>
           </div>
@@ -77,7 +79,9 @@ export const ProfilePage = () => {
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm dark:border dark:border-gray-800">
             <ClockIcon className="w-10 h-10 text-orange-500" />
 
-            <h3 className="mt-4 text-2xl font-bold">14</h3>
+            <h3 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
+              14
+            </h3>
 
             <p className="text-gray-500 dark:text-gray-400">
               Tasks In Progress
@@ -87,7 +91,9 @@ export const ProfilePage = () => {
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm dark:border dark:border-gray-800">
             <CheckCircleIcon className="w-10 h-10 text-green-500" />
 
-            <h3 className="mt-4 text-2xl font-bold">42</h3>
+            <h3 className="mt-4 text-2xl font-bold ext-gray-900 dark:text-white">
+              42
+            </h3>
 
             <p className="text-gray-500 dark:text-gray-400">Tasks Completed</p>
           </div>
@@ -106,7 +112,9 @@ export const ProfilePage = () => {
                 key={board.id}
                 className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer dark:border dark:border-gray-800"
               >
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">{board.name}</h3>
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+                  {board.name}
+                </h3>
 
                 <p className="text-gray-500 dark:text-gray-400">
                   {board.tasks} tasks
@@ -128,9 +136,11 @@ export const ProfilePage = () => {
 
         <div className="grid lg:grid-cols-2 gap-6 mt-10">
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer dark:border dark:border-gray-800">
-            <h2 className="text-xl font-bold mb-4">Recent Tasks</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+              Recent Tasks
+            </h2>
 
-            <div className="space-y-4">
+            <div className="space-y-4 text-gray-900 dark:text-white">
               <div className="flex justify-between">
                 <span>Implement JWT Auth</span>
                 <span className="text-orange-500">In Progress</span>
@@ -155,19 +165,25 @@ export const ProfilePage = () => {
 
             <div className="space-y-4">
               <div>
-                <p className="font-medium">Finish React Frontend</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  Finish React Frontend
+                </p>
 
                 <p className="text-sm text-red-500">Due Tomorrow</p>
               </div>
 
               <div>
-                <p className="font-medium">Deploy Backend</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  Deploy Backend
+                </p>
 
                 <p className="text-sm text-orange-500">Due in 3 days</p>
               </div>
 
               <div>
-                <p className="font-medium">Write Documentation</p>
+                <p className="font-medium text-gray-900 dark:text-white">
+                  Write Documentation
+                </p>
 
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Due next week
