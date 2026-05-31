@@ -1,8 +1,8 @@
-import {useForm} from "react-hook-form";
-import type {LoginRequest} from "../types/auth";
-import {useAuthStore} from "../store/authStore";
+import { useForm } from "react-hook-form";
+import type { LoginRequest } from "../types/auth";
+import { useAuthStore } from "../store/authStore";
 import toast from "react-hot-toast";
-import {useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const LoginPage = () => {
   const {
@@ -20,9 +20,7 @@ export const LoginPage = () => {
       toast.success("User logged in successfully.");
       navigate("/profile");
     } catch (error) {
-      toast.error(
-        authError || "Login failed. Please check your credentials.",
-      );
+      toast.error(authError || "Login failed. Please check your credentials.");
       console.error("Registration failed:", error);
     }
   };
@@ -73,7 +71,7 @@ export const LoginPage = () => {
             {errors.password.message}
           </span>
         )}
-        <button className="w-full bg-black text-white p-3 rounded">
+        <button className="w-full bg-black text-white p-3 rounded cursor-pointer">
           {isLoading && (
             <svg
               className="animate-spin h-5 w-5 text-white"
@@ -98,6 +96,12 @@ export const LoginPage = () => {
           )}
           <span>{isLoading ? "Signin In..." : "sign In"}</span>
         </button>
+        <p className="mt-2">
+          Don't yet have an account?{" "}
+          <Link className="text-indigo-600" to="/register">
+            Register Now
+          </Link>{" "}
+        </p>
       </form>
     </div>
   );

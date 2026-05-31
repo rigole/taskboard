@@ -7,6 +7,8 @@ import { Toaster } from "react-hot-toast";
 import { ProfilePage } from "./pages/ProfilePage.tsx";
 import { useThemeStore } from "./store/themeStore.tsx";
 import { useEffect } from "react";
+import GuestRoute from "./utils/GuestRoute.tsx";
+import ProtectedRoute from "./utils/ProtectedRoute.tsx";
 
 function App() {
   const darkMode = useThemeStore((state) => state.darkMode);
@@ -21,8 +23,22 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route
+            path="/login"
+            element={
+              <GuestRoute>
+                <LoginPage />
+              </GuestRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>

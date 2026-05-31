@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import type { RegisterRequest } from "../types/auth";
 import { useAuthStore } from "../store/authStore";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 export const RegisterPage = () => {
   //awerty
   //test@react.com
@@ -113,6 +113,12 @@ export const RegisterPage = () => {
           )}
           <span>{isLoading ? "Creating Account..." : "Register"}</span>
         </button>
+        <p className="mt-2">
+          Already have an account?{" "}
+          <Link className="text-indigo-600" to="/login">
+            Sign in Now
+          </Link>{" "}
+        </p>
       </form>
     </div>
   );
