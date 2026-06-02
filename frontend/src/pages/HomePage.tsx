@@ -82,21 +82,33 @@ export const HomePage = () => {
             </div>
             <div className="flex gap-10 mt-14">
               <div>
-                <h2 className="text-3xl font-bold">10K+</h2>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                  10K+
+                </h2>
 
-                <p className="text-gray-400">Active Users</p>
+                <p className="text-slate-900 dark:text-gray-400">
+                  Active Users
+                </p>
               </div>
 
               <div>
-                <h2 className="text-3xl font-bold">50K+</h2>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                  50K+
+                </h2>
 
-                <p className="text-gray-400">Tasks Completed</p>
+                <p className="text-slate-900 dark:text-gray-400">
+                  Tasks Completed
+                </p>
               </div>
 
               <div>
-                <h2 className="text-3xl font-bold">99%</h2>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                  99%
+                </h2>
 
-                <p className="text-gray-400">Productivity Boost</p>
+                <p className="text-slate-900 dark:text-gray-400">
+                  Productivity Boost
+                </p>
               </div>
             </div>
           </div>
@@ -197,52 +209,58 @@ export const HomePage = () => {
       <section className="px-8 py-20 border-t border-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <h2 className="text-4xl font-bold">
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-slate-100">
               Everything you need to manage projects
             </h2>
-
-            <p className="text-gray-400 mt-4">
+            <p className="text-slate-900 mt-4  dark:text-slate-100">
               Powerful tools designed for modern teams
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">
-            <div className="bg-gray-900 border border-gray-800 p-8 rounded-2xl">
+            <div className="dark:bg-gray-900 border border-gray-800 p-8 rounded-2xl bg-indigo-600/20">
               <RectangleGroupIcon className="w-12 h-12 text-indigo-500" />
 
-              <h3 className="text-xl font-semibold mt-6">Kanban Boards</h3>
+              <h3 className="text-xl font-semibold mt-6 text-slate-900 dark:text-slate-100">
+                Kanban Boards
+              </h3>
 
-              <p className="text-gray-400 mt-3">
+              <p className="mt-3 text-slate-900 dark:text-slate-100">
                 Organize tasks visually with drag and drop boards.
               </p>
             </div>
 
-            <div className="bg-gray-900 border border-gray-800 p-8 rounded-2xl">
+            <div className="dark:bg-gray-900 border border-gray-800 p-8 rounded-2xl bg-indigo-600/20">
               <ClockIcon className="w-12 h-12 text-indigo-500" />
 
-              <h3 className="text-xl font-semibold mt-6">Deadlines</h3>
-
-              <p className="text-gray-400 mt-3">
+              <h3 className="text-xl font-semibold mt-6 text-slate-900 dark:text-slate-100">
+                Deadlines
+              </h3>
+              <p className="mt-3 text-slate-900 dark:text-slate-100">
                 Track due dates and stay productive.
               </p>
             </div>
 
-            <div className="bg-gray-900 border border-gray-800 p-8 rounded-2xl">
+            <div className="dark:bg-gray-900 border border-gray-800 p-8 rounded-2xl bg-indigo-600/20">
               <UserGroupIcon className="w-12 h-12 text-indigo-500" />
 
-              <h3 className="text-xl font-semibold mt-6">Team Collaboration</h3>
+              <h3 className="text-xl font-semibold mt-6 text-slate-900 dark:text-slate-100">
+                Team Collaboration
+              </h3>
 
-              <p className="text-gray-400 mt-3">
+              <p className="mt-3 text-slate-900 dark:text-slate-100">
                 Assign tasks and collaborate seamlessly.
               </p>
             </div>
 
-            <div className="bg-gray-900 border border-gray-800 p-8 rounded-2xl">
+            <div className="dark:bg-gray-900 border border-gray-800 p-8 rounded-2xl bg-indigo-600/20">
               <CheckCircleIcon className="w-12 h-12 text-indigo-500" />
 
-              <h3 className="text-xl font-semibold mt-6">Productivity</h3>
+              <h3 className="text-xl font-semibold mt-6 text-slate-900 dark:text-slate-100">
+                Productivity
+              </h3>
 
-              <p className="text-gray-400 mt-3">
+              <p className="mt-3 text-slate-900 dark:text-slate-100">
                 Increase focus and complete projects faster.
               </p>
             </div>
