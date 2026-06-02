@@ -6,131 +6,187 @@ import {
   UserGroupIcon,
   SunIcon,
   MoonIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useThemeStore } from "../store/themeStore.tsx";
+import { useState } from "react";
 export const HomePage = () => {
   const { darkMode, toggleTheme } = useThemeStore();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950  text-white">
-      <nav className="flex items-center justify-between px-8 py-6 border-b bg-gray-100 dark:bg-gray-950  border-gray-800">
-        <div className="flex items-center gap-2">
-          <div className="bg-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl">
-            T
+      <nav className="border-b border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-950">
+        <div className="flex items-center justify-between px-6 md:px-8 py-6">
+          <div className="flex items-center gap-2">
+            <div className="bg-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl text-white">
+              T
+            </div>
+
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              TaskFlow
+            </h1>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            TaskFlow
-          </h1>
-        </div>
 
-        <div className="flex items-center gap-4 text-gray-900 dark:text-white">
-          <Link to="/login">Login</Link>
+          <div className="hidden md:flex items-center gap-4 text-gray-900 dark:text-white">
+            <Link to="/login">Login</Link>
 
-          <Link
-            to="/register"
-            className="bg-indigo-600 hover:bg-indigo-500 px-5 py-2 text-white rounded-lg transition"
-          >
-            Get Started
-          </Link>
-          <div className="flex items-center gap-4">
+            <Link
+              to="/register"
+              className="bg-indigo-600 hover:bg-indigo-500 px-5 py-2 text-white rounded-lg transition"
+            >
+              Get Started
+            </Link>
+
             <button
               onClick={toggleTheme}
-              className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-              aria-label="Toggle theme"
+              className="p-3 rounded-xl bg-indigo-500 transition"
             >
               {darkMode ? (
-                <SunIcon className="w-5 h-5 text-yellow-500" />
+                <SunIcon className="w-5 h-5  text-white" />
               ) : (
-                <MoonIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                <MoonIcon className="w-5 h-5 dark:bg-indigo-600 text-gray-900" />
               )}
             </button>
           </div>
+
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden text-gray-900 dark:text-white"
+          >
+            {mobileMenuOpen ? (
+              <XMarkIcon className="w-7 h-7" />
+            ) : (
+              <Bars3Icon className="w-7 h-7" />
+            )}
+          </button>
         </div>
+
+        {mobileMenuOpen && (
+          <div className="md:hidden px-6 pb-6 flex flex-col gap-4 bg-gray-100 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+            <Link
+              to="/login"
+              className="text-gray-900 dark:text-white"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Login
+            </Link>
+
+            <Link
+              to="/register"
+              className="bg-indigo-600 hover:bg-indigo-500 text-center px-5 py-3 rounded-lg text-white"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Get Started
+            </Link>
+
+            <button
+              onClick={toggleTheme}
+              className="flex items-center justify-center gap-2 p-3 rounded-lg bg-indigo-500 dark:bg-gray-800"
+            >
+              {darkMode ? (
+                <>
+                  <SunIcon className="w-5 h-5 text-yellow-500" />
+                  Light Mode
+                </>
+              ) : (
+                <>
+                  <MoonIcon className="w-5 h-5 dark:bg-indigo-600 text-gray-900" />
+                  Dark Mode
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </nav>
-
-      <section className="px-8 py-24 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left Content */}
           <div>
-            <span className="bg-indigo-600/20  text-indigo-400 px-4 py-2 rounded-full text-sm">
-              Modern Project Management
-            </span>
+      <span className="inline-block bg-indigo-600/20 text-indigo-400 px-4 py-2 rounded-full text-sm">
+        Modern Project Management
+      </span>
 
-            <h1 className="text-6xl font-bold mt-8 leading-tight text-slate-900 dark:text-slate-100">
+            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 dark:text-slate-100">
               Organize your work
               <span className="text-indigo-500"> beautifully</span>
             </h1>
 
-            <p className="text-lg mt-8 leading-relaxed text-slate-900 dark:text-slate-100">
-              Manage boards, tasks, deadlines, and team collaboration in one
-              elegant platform built for productivity.
+            <p className="mt-6 text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
+              Manage boards, tasks, deadlines, and team collaboration in one elegant
+              platform built for productivity.
             </p>
 
-            <div className="flex gap-4 mt-10">
+            {/* CTA Buttons */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Link
-                to="/register"
-                className="bg-indigo-600 hover:bg-indigo-500 px-8 py-4 rounded-xl font-semibold transition"
+                  to="/register"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-center px-8 py-4 rounded-xl font-semibold transition"
               >
                 Start Free
               </Link>
 
               <Link
-                to="/login"
-                className="border text-indigo-500 border-slate-900 dark:text-slate-100 hover:border-gray-500 px-8 py-4 rounded-xl font-semibold transition"
+                  to="/login"
+                  className="border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-center px-8 py-4 rounded-xl font-semibold transition"
               >
                 Login
               </Link>
             </div>
-            <div className="flex gap-10 mt-14">
+
+            {/* Stats */}
+            <div className="mt-12 grid grid-cols-3 gap-4">
               <div>
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
                   10K+
                 </h2>
-
-                <p className="text-slate-900 dark:text-gray-400">
+                <p className="text-sm sm:text-base text-slate-600 dark:text-gray-400">
                   Active Users
                 </p>
               </div>
 
               <div>
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
                   50K+
                 </h2>
-
-                <p className="text-slate-900 dark:text-gray-400">
+                <p className="text-sm sm:text-base text-slate-600 dark:text-gray-400">
                   Tasks Completed
                 </p>
               </div>
 
               <div>
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
                   99%
                 </h2>
-
-                <p className="text-slate-900 dark:text-gray-400">
+                <p className="text-sm sm:text-base text-slate-600 dark:text-gray-400">
                   Productivity Boost
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Right Side Board Preview */}
           <div className="relative">
-            <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl">
-              <div className="flex gap-4 overflow-x-auto">
-                <div className="bg-gray-950 rounded-2xl p-4 w-72 flex-shrink-0">
+            <div className="bg-gray-900 border border-gray-800 rounded-3xl p-4 sm:p-6 shadow-2xl overflow-hidden">
+              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin">
+                {/* TODO */}
+                <div className="bg-gray-950 rounded-2xl p-4 min-w-[260px] sm:min-w-[300px]">
                   <div className="flex items-center justify-between mb-5">
-                    <h3 className="font-semibold">To Do</h3>
-
+                    <h3 className="font-semibold text-white">To Do</h3>
                     <span className="text-sm text-gray-400">3</span>
                   </div>
 
                   <div className="space-y-4">
                     <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Design Landing Page</h4>
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium text-white">
+                          Design Landing Page
+                        </h4>
 
                         <span className="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded">
-                          High
-                        </span>
+                    High
+                  </span>
                       </div>
 
                       <p className="text-sm text-gray-400 mt-2">
@@ -139,12 +195,12 @@ export const HomePage = () => {
                     </div>
 
                     <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Setup Backend</h4>
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-medium text-white">Setup Backend</h4>
 
                         <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded">
-                          Medium
-                        </span>
+                    Medium
+                  </span>
                       </div>
 
                       <p className="text-sm text-gray-400 mt-2">
@@ -153,55 +209,54 @@ export const HomePage = () => {
                     </div>
                   </div>
                 </div>
-                <div className="bg-gray-950 rounded-2xl p-4 w-72 flex-shrink-0">
-                  <div className="flex items-center justify-between mb-5">
-                    <h3 className="font-semibold">In Progress</h3>
 
+                {/* IN PROGRESS */}
+                <div className="bg-gray-950 rounded-2xl p-4 min-w-[260px] sm:min-w-[300px]">
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className="font-semibold text-white">In Progress</h3>
                     <span className="text-sm text-gray-400">2</span>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">JWT Authentication</h4>
+                  <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium text-white">
+                        JWT Authentication
+                      </h4>
 
-                        <span className="bg-indigo-500/20 text-indigo-400 text-xs px-2 py-1 rounded">
-                          Active
-                        </span>
-                      </div>
-
-                      <p className="text-sm text-gray-400 mt-2">
-                        Implement secure login system
-                      </p>
+                      <span className="bg-indigo-500/20 text-indigo-400 text-xs px-2 py-1 rounded">
+                  Active
+                </span>
                     </div>
+
+                    <p className="text-sm text-gray-400 mt-2">
+                      Implement secure login system
+                    </p>
                   </div>
                 </div>
 
-                <div className="bg-gray-950 rounded-2xl p-4 w-72 flex-shrink-0">
+                {/* DONE */}
+                <div className="bg-gray-950 rounded-2xl p-4 min-w-[260px] sm:min-w-[300px]">
                   <div className="flex items-center justify-between mb-5">
-                    <h3 className="font-semibold">Done</h3>
-
+                    <h3 className="font-semibold text-white">Done</h3>
                     <span className="text-sm text-gray-400">5</span>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Database Setup</h4>
+                  <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium text-white">Database Setup</h4>
 
-                        <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                      </div>
-
-                      <p className="text-sm text-gray-400 mt-2">
-                        PostgreSQL configured
-                      </p>
+                      <CheckCircleIcon className="w-5 h-5 text-green-500" />
                     </div>
+
+                    <p className="text-sm text-gray-400 mt-2">
+                      PostgreSQL configured
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="absolute -z-10 top-10 right-10 w-72 h-72 bg-indigo-600 rounded-full blur-[120px] opacity-20"></div>
+            <div className="hidden lg:block absolute -z-10 top-10 right-10 w-72 h-72 bg-indigo-600 rounded-full blur-[120px] opacity-20" />
           </div>
         </div>
       </section>
