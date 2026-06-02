@@ -4,48 +4,63 @@ import {
   RectangleGroupIcon,
   ClockIcon,
   UserGroupIcon,
+  SunIcon,
+  MoonIcon,
 } from "@heroicons/react/24/outline";
+import { useThemeStore } from "../store/themeStore.tsx";
 export const HomePage = () => {
+  const { darkMode, toggleTheme } = useThemeStore();
+
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <nav className="flex items-center justify-between px-8 py-6 border-b border-gray-800">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-950  text-white">
+      <nav className="flex items-center justify-between px-8 py-6 border-b bg-gray-100 dark:bg-gray-950  border-gray-800">
         <div className="flex items-center gap-2">
           <div className="bg-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl">
             T
           </div>
-          <h1 className="text-2xl font-bold">TaskFlow</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            TaskFlow
+          </h1>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Link
-            to="/login"
-            className="text-gray-300 hover:text-white transition"
-          >
-            Login
-          </Link>
+        <div className="flex items-center gap-4 text-gray-900 dark:text-white">
+          <Link to="/login">Login</Link>
 
           <Link
             to="/register"
-            className="bg-indigo-600 hover:bg-indigo-500 px-5 py-2 rounded-lg transition"
+            className="bg-indigo-600 hover:bg-indigo-500 px-5 py-2 text-white rounded-lg transition"
           >
             Get Started
           </Link>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              aria-label="Toggle theme"
+            >
+              {darkMode ? (
+                <SunIcon className="w-5 h-5 text-yellow-500" />
+              ) : (
+                <MoonIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              )}
+            </button>
+          </div>
         </div>
       </nav>
 
       <section className="px-8 py-24 max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
-            <span className="bg-indigo-600/20 text-indigo-400 px-4 py-2 rounded-full text-sm">
+            <span className="bg-indigo-600/20  text-indigo-400 px-4 py-2 rounded-full text-sm">
               Modern Project Management
             </span>
 
-            <h1 className="text-6xl font-bold mt-8 leading-tight">
+            <h1 className="text-6xl font-bold mt-8 leading-tight text-slate-900 dark:text-slate-100">
               Organize your work
               <span className="text-indigo-500"> beautifully</span>
             </h1>
 
-            <p className="text-gray-400 text-lg mt-8 leading-relaxed">
+            <p className="text-lg mt-8 leading-relaxed text-slate-900 dark:text-slate-100">
               Manage boards, tasks, deadlines, and team collaboration in one
               elegant platform built for productivity.
             </p>
@@ -60,7 +75,7 @@ export const HomePage = () => {
 
               <Link
                 to="/login"
-                className="border border-gray-700 hover:border-gray-500 px-8 py-4 rounded-xl font-semibold transition"
+                className="border text-indigo-500 border-slate-900 dark:text-slate-100 hover:border-gray-500 px-8 py-4 rounded-xl font-semibold transition"
               >
                 Login
               </Link>
