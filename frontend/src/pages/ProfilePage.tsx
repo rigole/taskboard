@@ -9,7 +9,9 @@ import {
 import toast from "react-hot-toast";
 import { useThemeStore } from "../store/themeStore.tsx";
 import { useBoardState } from "../store/boardStore.ts";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { BoardResponse } from "../types/board.ts";
+import BoardModal from "../components/Modal.tsx";
 
 const boards = [
   {
@@ -41,6 +43,10 @@ export const ProfilePage = () => {
 
   const { darkMode, toggleTheme } = useThemeStore();
   const userName = localStorage.getItem("username");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBoard, setSelectedBoard] = useState<BoardResponse | null>(
+    null,
+  );
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 transition-colors duration-300">
       <header className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-6 py-4 flex items-center justify-between w-full">
@@ -123,6 +129,10 @@ export const ProfilePage = () => {
             {boards.map((board) => (
               <div
                 key={board.id}
+                onClick={() => {
+                  setSelectedBoard(board);
+                  setIsModalOpen(true);
+                }}
                 className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer dark:border dark:border-gray-800"
               >
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
@@ -135,7 +145,13 @@ export const ProfilePage = () => {
               </div>
             ))}
 
-            <div className="border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center min-h-[140px] cursor-pointer hover:border-indigo-500 transition">
+            <div
+              onClick={() => {
+                setSelectedBoard(null);
+                setIsModalOpen(true);
+              }}
+              className="border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center min-h-[140px] cursor-pointer hover:border-indigo-500 transition"
+            >
               <div className="text-center">
                 <PlusIcon className="w-8 h-8 mx-auto text-gray-500 dark:text-gray-400" />
 
@@ -206,6 +222,11 @@ export const ProfilePage = () => {
           </div>
         </div>
       </main>
+      <BoardModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        board={selectedBoard}
+      />
     </div>
   );
 };

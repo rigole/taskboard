@@ -4,8 +4,8 @@ import { useAuthStore } from "../store/authStore";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 export const RegisterPage = () => {
-  //awerty
-  //test@react.com
+  //testboard
+  //testboard@gmail.com
   const {
     register,
     handleSubmit,

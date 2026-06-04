@@ -14,6 +14,7 @@ import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/columns")
 public class ColumnController {
 

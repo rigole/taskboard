@@ -16,6 +16,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/boards")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class BoardController {
 
     private final BoardService boardService;

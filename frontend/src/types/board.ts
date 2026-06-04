@@ -11,3 +11,9 @@ export interface BoardResponse {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface BoardModalProps {
+  open: boolean;
+  onClose: () => void;
+  board: BoardResponse | null;
+}
