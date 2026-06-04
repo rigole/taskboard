@@ -9,6 +9,7 @@ import { useThemeStore } from "./store/themeStore.tsx";
 import { useEffect } from "react";
 import GuestRoute from "./utils/GuestRoute.tsx";
 import ProtectedRoute from "./utils/ProtectedRoute.tsx";
+import { BoardPage } from "./pages/BoardPage.tsx";
 
 function App() {
   const darkMode = useThemeStore((state) => state.darkMode);
@@ -23,6 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/board" element={<BoardPage />} />
           <Route
             path="/login"
             element={

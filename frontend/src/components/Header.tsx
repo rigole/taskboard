@@ -1,4 +1,3 @@
-import type { ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from "react";
 import { useThemeStore } from "../store/themeStore";
 import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 interface HeaderProps {
