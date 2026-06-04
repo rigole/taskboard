@@ -26,6 +26,10 @@ export default defineConfig([
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
+         "error",
+        {
+        "endOfLine": "auto"
+        }
       ],
 
       "prettier/prettier": "error",

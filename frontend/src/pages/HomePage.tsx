@@ -104,9 +104,9 @@ export const HomePage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Content */}
           <div>
-      <span className="inline-block bg-indigo-600/20 text-indigo-400 px-4 py-2 rounded-full text-sm">
-        Modern Project Management
-      </span>
+            <span className="inline-block bg-indigo-600/20 text-indigo-400 px-4 py-2 rounded-full text-sm">
+              Modern Project Management
+            </span>
 
             <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight text-slate-900 dark:text-slate-100">
               Organize your work
@@ -114,22 +114,22 @@ export const HomePage = () => {
             </h1>
 
             <p className="mt-6 text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-              Manage boards, tasks, deadlines, and team collaboration in one elegant
-              platform built for productivity.
+              Manage boards, tasks, deadlines, and team collaboration in one
+              elegant platform built for productivity.
             </p>
 
             {/* CTA Buttons */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Link
-                  to="/register"
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-center px-8 py-4 rounded-xl font-semibold transition"
+                to="/register"
+                className="bg-indigo-600 hover:bg-indigo-500 text-white text-center px-8 py-4 rounded-xl font-semibold transition"
               >
                 Start Free
               </Link>
 
               <Link
-                  to="/login"
-                  className="border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-center px-8 py-4 rounded-xl font-semibold transition"
+                to="/login"
+                className="border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-center px-8 py-4 rounded-xl font-semibold transition"
               >
                 Login
               </Link>
@@ -185,8 +185,8 @@ export const HomePage = () => {
                         </h4>
 
                         <span className="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded">
-                    High
-                  </span>
+                          High
+                        </span>
                       </div>
 
                       <p className="text-sm text-gray-400 mt-2">
@@ -196,11 +196,13 @@ export const HomePage = () => {
 
                     <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
                       <div className="flex justify-between items-center">
-                        <h4 className="font-medium text-white">Setup Backend</h4>
+                        <h4 className="font-medium text-white">
+                          Setup Backend
+                        </h4>
 
                         <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded">
-                    Medium
-                  </span>
+                          Medium
+                        </span>
                       </div>
 
                       <p className="text-sm text-gray-400 mt-2">
@@ -224,8 +226,8 @@ export const HomePage = () => {
                       </h4>
 
                       <span className="bg-indigo-500/20 text-indigo-400 text-xs px-2 py-1 rounded">
-                  Active
-                </span>
+                        Active
+                      </span>
                     </div>
 
                     <p className="text-sm text-gray-400 mt-2">

@@ -3,7 +3,6 @@ import type { LoginRequest } from "../types/auth";
 import { useAuthStore } from "../store/authStore";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-
 export const LoginPage = () => {
   const {
     register,
@@ -21,7 +20,7 @@ export const LoginPage = () => {
       navigate("/profile");
     } catch (error) {
       toast.error(authError || "Login failed. Please check your credentials.");
-      console.error("Registration failed:", error);
+      console.error("Login failed:", error);
     }
   };
   return (

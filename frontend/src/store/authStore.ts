@@ -5,6 +5,7 @@ import type {
   LoginRequest,
   AuthResponse,
 } from "../types/auth";
+import axios from "axios";
 
 interface AuthState {
   user: AuthResponse | null;
@@ -27,9 +28,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await authService.register(data);
       set({ user: response, loading: false, error: null });
       localStorage.setItem("token", response.token);
-    } catch (error: any) {
-      const serverMessage =
-        error.response?.data?.message || "Invalid data or server error";
+      localStorage.setItem("username", response.fullName);
+    } catch (error: unknown) {
+      let serverMessage = "Invalid data or server error";
+      if (axios.isAxiosError(error)) {
+        serverMessage = error.response?.data?.message ?? serverMessage;
+      }
       set({ loading: false, error: serverMessage });
       throw error;
     }
@@ -40,9 +44,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await authService.login(data);
       set({ user: response, loading: false, error: null });
       localStorage.setItem("token", response.token);
-    } catch (error: any) {
-      const serverMessage =
-        error.response?.data?.message || "Invalid credentials";
+      localStorage.setItem("username", response.fullName);
+    } catch (error: unknown) {
+      let serverMessage = "Invalid data or server error";
+      if (axios.isAxiosError(error)) {
+        serverMessage = error.response?.data?.message ?? serverMessage;
+      }
       set({ loading: false, error: serverMessage });
       throw error;
     }

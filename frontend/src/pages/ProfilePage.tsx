@@ -6,7 +6,10 @@ import {
   MoonIcon,
   SunIcon,
 } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 import { useThemeStore } from "../store/themeStore.tsx";
+import { useBoardState } from "../store/boardStore.ts";
+import { useEffect } from "react";
 
 const boards = [
   {
@@ -27,7 +30,17 @@ const boards = [
 ];
 
 export const ProfilePage = () => {
+  const boardsUser = useBoardState((state) => state.getUserBoards);
+  const boards = useBoardState((state) => state.boards);
+  const isLoading = useBoardState((state) => state.loading);
+  const boardError = useBoardState((state) => state.error);
+
+  useEffect(() => {
+    boardsUser();
+  }, [boardsUser]);
+
   const { darkMode, toggleTheme } = useThemeStore();
+  const userName = localStorage.getItem("username");
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 transition-colors duration-300">
       <header className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-6 py-4 flex items-center justify-between w-full">
@@ -38,7 +51,7 @@ export const ProfilePage = () => {
 
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-              Welcome user!
+              Welcome {userName}!
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Here's an overview of your workspace.
@@ -117,7 +130,7 @@ export const ProfilePage = () => {
                 </h3>
 
                 <p className="text-gray-500 dark:text-gray-400">
-                  {board.tasks} tasks
+                  {board.description}
                 </p>
               </div>
             ))}
