@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import type { BoardModalProps } from "../types/board";
-
-export default function BoardModal({
-  open,
-  onClose,
-  board,
-}: BoardModalProps) {
+import toast from "react-hot-toast";
+import { useBoardState } from "../store/boardStore.ts";
+export default function BoardModal({ open, onClose, board }: BoardModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const { addBoard, updateBoard, error, getUserBoards } = useBoardState();
 
   useEffect(() => {
     if (board) {
@@ -23,13 +21,18 @@ export default function BoardModal({
 
   const handleSubmit = async () => {
     if (board?.id) {
-      // Update board
-      console.log("Update board", board.id);
+      await updateBoard(board.id, {
+        name,
+        description,
+        updateDate: new Date(),
+      });
+      await getUserBoards();
+      toast.success("Board updated successfully!");
     } else {
-      // Create board
-      console.log("Create board");
+      await addBoard({ name, description });
+      await getUserBoards();
+      toast.success("Board created successfully!");
     }
-
     onClose();
   };
 
@@ -58,10 +61,7 @@ export default function BoardModal({
         </div>
 
         <div className="flex justify-end gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border rounded-lg"
-          >
+          <button onClick={onClose} className="px-4 py-2 border rounded-lg">
             Cancel
           </button>
 

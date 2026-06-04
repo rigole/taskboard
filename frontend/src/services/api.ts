@@ -12,20 +12,20 @@ api.interceptors.request.use(
     const token = localStorage.getItem("token");
     if (token) {
       config.headers = config.headers || {};
-      (config.headers)["Authorization"] = `Bearer ${token}`;
+      (config.headers as any)["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
   (error: unknown) => {
     if (isAxiosError(error)) {
-      if (error.response?.status === 401) {
+      if (error.response?.status === 401 || error.response?.status === 500) {
         localStorage.removeItem("token");
         localStorage.removeItem("username");
         window.location.href = "/login";
       }
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;

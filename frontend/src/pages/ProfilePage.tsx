@@ -6,42 +6,32 @@ import {
   MoonIcon,
   SunIcon,
 } from "@heroicons/react/24/outline";
-import toast from "react-hot-toast";
-import { useThemeStore } from "../store/themeStore.tsx";
+import { Header } from "../components/Header.tsx";
 import { useBoardState } from "../store/boardStore.ts";
 import { useEffect, useState } from "react";
 import type { BoardResponse } from "../types/board.ts";
 import BoardModal from "../components/Modal.tsx";
-
-const boards = [
-  {
-    id: 1,
-    name: "Task Management App",
-    tasks: 24,
-  },
-  {
-    id: 2,
-    name: "Portfolio Website",
-    tasks: 12,
-  },
-  {
-    id: 3,
-    name: "CRM Project",
-    tasks: 35,
-  },
-];
+import { useNavigate } from "react-router-dom";
 
 export const ProfilePage = () => {
   const boardsUser = useBoardState((state) => state.getUserBoards);
   const boards = useBoardState((state) => state.boards);
   const isLoading = useBoardState((state) => state.loading);
   const boardError = useBoardState((state) => state.error);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    boardsUser();
-  }, [boardsUser]);
+    const loadBoards = async () => {
+      try {
+        await boardsUser();
+      } catch (error) {
+        navigate("/login");
+      }
+    };
 
-  const { darkMode, toggleTheme } = useThemeStore();
+    loadBoards();
+  }, [boardsUser, navigate]);
+
   const userName = localStorage.getItem("username");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState<BoardResponse | null>(
@@ -49,40 +39,7 @@ export const ProfilePage = () => {
   );
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-950 transition-colors duration-300">
-      <header className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-6 py-4 flex items-center justify-between w-full">
-        <div className="flex items-center gap-3">
-          <div className="bg-indigo-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl text-white">
-            T
-          </div>
-
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-              Welcome {userName}!
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Here's an overview of your workspace.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={toggleTheme}
-            className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-            aria-label="Toggle theme"
-          >
-            {darkMode ? (
-              <SunIcon className="w-5 h-5 text-yellow-500" />
-            ) : (
-              <MoonIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            )}
-          </button>
-
-          <button className="bg-indigo-600 text-white px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-indigo-500 transition shadow-sm font-medium">
-            Create Board
-          </button>
-        </div>
-      </header>
-
+      <Header userName={userName ?? ""} />
       <main className="p-8">
         <div className="grid md:grid-cols-3 gap-6 mb-10">
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm dark:border dark:border-gray-800">
@@ -126,7 +83,7 @@ export const ProfilePage = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {boards.map((board) => (
+            {boards.slice(0, 3).map((board) => (
               <div
                 key={board.id}
                 onClick={() => {
@@ -141,6 +98,12 @@ export const ProfilePage = () => {
 
                 <p className="text-gray-500 dark:text-gray-400">
                   {board.description}
+                </p>
+
+                <p className="text-sm text-orange-500 pt-2 dark:text-gray-400">
+                  {board.updatedAt
+                    ? `Last updated: ${new Date(board.updatedAt).toLocaleDateString()}`
+                    : "No updates yet"}
                 </p>
               </div>
             ))}
