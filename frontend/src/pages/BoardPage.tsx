@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useBoardState } from "../store/boardStore";
 import { Header } from "../components/Header";
 import { TrashIcon, ArrowLongRightIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 export const BoardPage = () => {
   const boardsUser = useBoardState((state) => state.getUserBoards);
@@ -61,11 +62,12 @@ export const BoardPage = () => {
                     ? `Last updated: ${new Date(board.updatedAt).toLocaleDateString()}`
                     : "No updates yet"}
                 </span>
-
-                <button className="text-orange-500 font-medium hover:text-orange-600">
-                  Open{" "}
-                  <ArrowLongRightIcon className="w-4 h-4 inline-block ml-1" />
-                </button>
+                <Link to={`/boards/${board.id}`}>
+                  <button  className="text-orange-500 font-medium hover:text-orange-600 cursor-point">
+                    Open{" "}
+                    <ArrowLongRightIcon className="w-4 h-4 inline-block ml-1" />
+                  </button>
+                </Link>
               </div>
             </div>
           ))}

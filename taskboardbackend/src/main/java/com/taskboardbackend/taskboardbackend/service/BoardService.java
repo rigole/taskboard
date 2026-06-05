@@ -44,6 +44,14 @@ public class BoardService {
         return mapToResponse(boardRepository.save(board));
     }
 
+    public BoardResponse getBoardById(UUID boardId, User user) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));
+        if (!board.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("User not the same user");
+        }
+        return mapToResponse(board);
+    }
+
 
     public BoardResponse updateBoard(UUID boardId, BoardRequest boardRequest, User user) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("Board not found"));

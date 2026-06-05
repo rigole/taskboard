@@ -1,9 +1,201 @@
-interface HeaderProps {
-  id: string | null;
-}
+import { useParams } from "react-router-dom";
+import { PlusIcon, ArrowsUpDownIcon } from "@heroicons/react/24/outline";
+import { Header } from "./Header";
+import {
+  DndContext,
+  closestCorners,
+  type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import { Column } from "./Column";
+import { arrayMove } from "@dnd-kit/sortable";
+import { useState } from "react";
+import type { Columns } from "../types/column";
+import { TaskCard } from "./TaskCard";
+import type { Task } from "../types/task";
+import { AddColumnCard } from "./AddColumnCard";
 
-export const BoardDetails = ({ id }: HeaderProps) => {
-    return (<>
-    </>
-    )
-}
+export const BoardDetails = () => {
+  const [columns, setColumns] = useState<Columns[]>([]);
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const userName = localStorage.getItem("username");
+  const board = {
+    name: "TaskBoard",
+    description: "Manage development tasks",
+    columns: [
+      {
+        id: "1",
+        name: "To Do",
+        tasks: [
+          {
+            id: "1",
+            title: "Create Login Page",
+            description: "Build login UI with React",
+            position: 0,
+            priority: "Medium",
+            createdBy: "user1",
+            assignee: "user2",
+            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          {
+            id: "2",
+            title: "Setup Zustand",
+            description: "Create auth store",
+            position: 0,
+            priority: "High",
+            createdBy: "user1",
+            assignee: "user2",
+            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
+        position: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "2",
+        name: "In Progress",
+        tasks: [
+          {
+            id: "3",
+            title: "Board API",
+            description: "Implement CRUD operations",
+            position: 0,
+            createdBy: "user1",
+            assignee: "user2",
+            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            priority: "High",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
+        position: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: "3",
+        name: "Done",
+        tasks: [
+          {
+            id: "4",
+            title: "Project Setup",
+            description: "Vite + React + Tailwind",
+            position: 0,
+            createdBy: "user1",
+            assignee: "user2",
+            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            priority: "Low",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
+        position: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+  };
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const activeColumn = findColumn(active.id as string);
+    const overColumn = findColumn(over.id as string);
+
+    if (!activeColumn || !overColumn) {
+      return;
+    }
+
+    setColumns((columns) => {
+      const column = columns.find((column) =>
+        column.tasks.some((task) => task.id === active.id),
+      );
+
+      if (!column) return columns;
+
+      const oldIndex = column.tasks.findIndex((task) => task.id === active.id);
+
+      const newIndex = column.tasks.findIndex((task) => task.id === over.id);
+
+      const updatedColumn = {
+        ...column,
+        tasks: arrayMove(column.tasks, oldIndex, newIndex),
+      };
+
+      return columns.map((c) => (c.id === column.id ? updatedColumn : c));
+    });
+  };
+
+  const handleAddColumn = () => {
+    // let newColumn;
+    console.log("Add Column");
+
+    // setColumns((prev) => [...prev, newColumn]);
+  };
+
+  const findColumn = (taskId: string) => {
+    return columns.find((column) =>
+      column.tasks.some((task) => task.id === taskId),
+    );
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const task = columns
+      .flatMap((column) => column.tasks)
+      .find((task) => task.id === event.active.id);
+
+    setActiveTask(task ?? null);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <Header userName={userName ?? ""} />
+      <div className="bg-white dark:bg-gray-900 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              {board.name}
+            </h1>
+
+            <p className="text-gray-500 dark:text-gray-400 mt-2">
+              {board.description}
+            </p>
+          </div>
+
+          <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+            <ArrowsUpDownIcon />
+          </button>
+        </div>
+      </div>
+
+      <DndContext
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragCancel={() => setActiveTask(null)}
+      >
+        <div className="flex gap-6 overflow-x-auto p-4">
+          {board.columns.map((column) => (
+            <Column key={column.id} column={column} />
+          ))}
+          <AddColumnCard onAddColumn={handleAddColumn} />
+        </div>
+      </DndContext>
+
+      <div className="overflow-x-auto">
+        <DragOverlay>
+          {activeTask ? <TaskCard task={activeTask} /> : null}
+        </DragOverlay>
+      </div>
+    </div>
+  );
+};

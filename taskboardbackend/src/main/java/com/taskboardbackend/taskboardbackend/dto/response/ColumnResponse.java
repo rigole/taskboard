@@ -1,11 +1,11 @@
 package com.taskboardbackend.taskboardbackend.dto.response;
 
 
-import com.taskboardbackend.taskboardbackend.model.Board;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -16,4 +16,5 @@ public class ColumnResponse {
     private Integer position;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<TaskResponse> tasks;
 }

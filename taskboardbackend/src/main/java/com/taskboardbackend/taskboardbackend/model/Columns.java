@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -33,6 +35,9 @@ public class Columns {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", unique = true, nullable = false)
     private Board board;
+
+    @OneToMany(mappedBy = "columns", fetch = FetchType.LAZY)
+    private List<Task> tasks = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

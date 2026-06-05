@@ -4,8 +4,10 @@ package com.taskboardbackend.taskboardbackend.service;
 import com.taskboardbackend.taskboardbackend.dto.request.ColumnRequest;
 import com.taskboardbackend.taskboardbackend.dto.response.BoardResponse;
 import com.taskboardbackend.taskboardbackend.dto.response.ColumnResponse;
+import com.taskboardbackend.taskboardbackend.dto.response.TaskResponse;
 import com.taskboardbackend.taskboardbackend.model.Board;
 import com.taskboardbackend.taskboardbackend.model.Columns;
+import com.taskboardbackend.taskboardbackend.model.Task;
 import com.taskboardbackend.taskboardbackend.model.User;
 import com.taskboardbackend.taskboardbackend.repository.BoardRepository;
 import com.taskboardbackend.taskboardbackend.repository.ColumnRepository;
@@ -49,10 +51,32 @@ public class ColumnsService {
     }
 
 
+    private TaskResponse mapTaskToResponse(Task task) {
+        return TaskResponse.builder()
+                .id(task.getId())
+                .description(task.getDescription())
+                .createdAt(task.getCreatedAt())
+                .createdBy(task.getCreatedBy().getFullName())
+                .title(task.getTitle())
+                .priority(task.getPriority())
+                .dueDate(task.getDueDate())
+                .position(task.getPosition())
+                .assignee(task.getAssigneeUser().getFullName())
+                .updatedAt(task.getUpdatedAt())
+                .build();
+
+
+    }
+
     private ColumnResponse mapToResponse(Columns columns) {
+        List<TaskResponse> tasks = columns.getTasks()
+                .stream()
+                .map(this::mapTaskToResponse)
+                .collect(Collectors.toList());
         return ColumnResponse.builder()
                 .id(columns.getId())
                 .name(columns.getName())
+                .tasks(tasks)
                 .createdAt(columns.getCreatedAt())
                 .updatedAt(columns.getUpdatedAt())
                 .position(columns.getPosition())
