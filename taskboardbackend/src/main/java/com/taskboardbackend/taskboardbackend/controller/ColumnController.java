@@ -20,9 +20,9 @@ public class ColumnController {
 
     private final ColumnsService columnsService;
 
-    @GetMapping
-    public ResponseEntity<List<ColumnResponse>> getAll(UUID bordId) {
-        return ResponseEntity.ok(columnsService.getAllColumns(bordId));
+    @GetMapping("/{boardId}")
+    public ResponseEntity<List<ColumnResponse>> getAll(@PathVariable UUID boardId) {
+        return ResponseEntity.ok(columnsService.getAllColumns(boardId));
     }
 
     @PostMapping

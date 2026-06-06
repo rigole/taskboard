@@ -14,7 +14,9 @@ public interface ColumnRepository extends JpaRepository<Columns, UUID> {
     @Query("""
                 SELECT DISTINCT c
                 FROM Columns c
-                LEFT JOIN FETCH c.tasks
+                LEFT JOIN FETCH c.tasks t
+                LEFT JOIN FETCH t.createdBy
+                LEFT JOIN FETCH t.assigneeUser
                 WHERE c.board.id = :boardId
             """)
     List<Columns> findByBoardId(UUID boardId);

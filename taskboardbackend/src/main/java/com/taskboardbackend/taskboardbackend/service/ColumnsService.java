@@ -61,7 +61,11 @@ public class ColumnsService {
                 .priority(task.getPriority())
                 .dueDate(task.getDueDate())
                 .position(task.getPosition())
-                .assignee(task.getAssigneeUser().getFullName())
+                .assignee(task.getAssigneeUser() != null
+                        ? task.getAssigneeUser().getFullName()
+                        : null
+
+                )
                 .updatedAt(task.getUpdatedAt())
                 .build();
 

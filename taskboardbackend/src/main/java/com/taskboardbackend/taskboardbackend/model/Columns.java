@@ -36,7 +36,7 @@ public class Columns {
     @JoinColumn(name = "board_id", unique = true, nullable = false)
     private Board board;
 
-    @OneToMany(mappedBy = "columns", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "column", fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
 
     @PrePersist
