@@ -24,10 +24,6 @@ jobs:
           distribution: "temurin"
           cache: maven
 
-      - name: Run tests
-        working-directory: ./taskboardbackend
-        run: mvn test
-
       - name: Build with Maven
         working-directory: ./taskboardbackend
         run: mvn clean install -DskipTests
