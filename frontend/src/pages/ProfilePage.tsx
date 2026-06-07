@@ -11,7 +11,7 @@ import { useBoardState } from "../store/boardStore.ts";
 import { useEffect, useState } from "react";
 import type { BoardResponse } from "../types/board.ts";
 import BoardModal from "../components/Modal.tsx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const ProfilePage = () => {
   const boardsUser = useBoardState((state) => state.getUserBoards);
@@ -79,7 +79,11 @@ export const ProfilePage = () => {
           <div className="flex justify-between items-center mb-6 text-gray-900 dark:text-white">
             <h2 className="text-2xl font-bold">My Boards</h2>
 
-            <button className="text-indigo-600 font-medium">View All</button>
+            <button className="text-indigo-600 font-medium cursor-pointer">
+              <Link to="/boards">
+                View All
+              </Link>
+            </button>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -2,13 +2,14 @@ import { useEffect } from "react";
 import { useBoardState } from "../store/boardStore";
 import { Header } from "../components/Header";
 import { TrashIcon, ArrowLongRightIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const BoardPage = () => {
   const boardsUser = useBoardState((state) => state.getUserBoards);
   const boards = useBoardState((state) => state.boards);
   const isLoading = useBoardState((state) => state.loading);
   const boardError = useBoardState((state) => state.error);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadBoards = async () => {
@@ -21,6 +22,10 @@ export const BoardPage = () => {
 
     loadBoards();
   }, [boardsUser]);
+
+  const openBoardDetail = (boardId: string) => {
+    navigate(`/boards/${boardId}`);
+  }
 
   const userName = localStorage.getItem("username");
   return (
@@ -42,6 +47,7 @@ export const BoardPage = () => {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {boards.map((board) => (
             <div
+              onClick={() => openBoardDetail(board.id)}
               key={board.id}
               className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-lg transition cursor-pointer border border-transparent dark:border-gray-800"
             >

@@ -10,98 +10,41 @@ import {
 } from "@dnd-kit/core";
 import { Column } from "./Column";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useState } from "react";
-import type { Columns } from "../types/column";
+import { useEffect, useState } from "react";
 import { TaskCard } from "./TaskCard";
 import type { Task } from "../types/task";
 import { AddColumnCard } from "./AddColumnCard";
+import { useColumnState } from "../store/columnStore";
+import { useBoardState } from "../store/boardStore";
 
 export const BoardDetails = () => {
-  const [columns, setColumns] = useState<Columns[]>([]);
+
+  const { id } = useParams();
+  const getBoardById = useBoardState((state) => state.getBoardById);
+  const columns = useColumnState((state) => state.columns);
+  const getBoardColumns = useColumnState((state) => state.getBoardColumns);
+  const updateColumn = useColumnState((state) => state.updateColumn);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const userName = localStorage.getItem("username");
-  const board = {
-    name: "TaskBoard",
-    description: "Manage development tasks",
-    columns: [
-      {
-        id: "1",
-        name: "To Do",
-        tasks: [
-          {
-            id: "1",
-            title: "Create Login Page",
-            description: "Build login UI with React",
-            position: 0,
-            priority: "Medium",
-            createdBy: "user1",
-            assignee: "user2",
-            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-          {
-            id: "2",
-            title: "Setup Zustand",
-            description: "Create auth store",
-            position: 0,
-            priority: "High",
-            createdBy: "user1",
-            assignee: "user2",
-            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ],
-        position: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "2",
-        name: "In Progress",
-        tasks: [
-          {
-            id: "3",
-            title: "Board API",
-            description: "Implement CRUD operations",
-            position: 0,
-            createdBy: "user1",
-            assignee: "user2",
-            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            priority: "High",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ],
-        position: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: "3",
-        name: "Done",
-        tasks: [
-          {
-            id: "4",
-            title: "Project Setup",
-            description: "Vite + React + Tailwind",
-            position: 0,
-            createdBy: "user1",
-            assignee: "user2",
-            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            priority: "Low",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        ],
-        position: 2,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
-  };
-  const handleDragEnd = (event: DragEndEvent) => {
+  const currentBoard = useBoardState((state) => state.board);
+
+  useEffect(() => {
+    const loadColumns = async () => {
+      try {
+        if (id) {
+          await getBoardColumns(id);
+        }
+      } catch (error) {
+        console.error("Failed to load columns:", error);
+      }
+    };
+    loadColumns();
+    if (id) {
+      getBoardById(id);
+    }
+  }, [getBoardColumns, id]);
+
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (!over || active.id === over.id) {
@@ -114,25 +57,18 @@ export const BoardDetails = () => {
     if (!activeColumn || !overColumn) {
       return;
     }
+    const column = columns.find((column) =>
+      column.tasks.some((task) => task.id === active.id),
+    );
 
-    setColumns((columns) => {
-      const column = columns.find((column) =>
-        column.tasks.some((task) => task.id === active.id),
-      );
+    if (!column) return;
 
-      if (!column) return columns;
+    const oldIndex = column.tasks.findIndex((task) => task.id === active.id);
+    const newIndex = column.tasks.findIndex((task) => task.id === over.id);
 
-      const oldIndex = column.tasks.findIndex((task) => task.id === active.id);
+    const reorderedTasks = arrayMove(column.tasks, oldIndex, newIndex);
 
-      const newIndex = column.tasks.findIndex((task) => task.id === over.id);
-
-      const updatedColumn = {
-        ...column,
-        tasks: arrayMove(column.tasks, oldIndex, newIndex),
-      };
-
-      return columns.map((c) => (c.id === column.id ? updatedColumn : c));
-    });
+    await updateColumn(column.id, { tasks: reorderedTasks });
   };
 
   const handleAddColumn = () => {
@@ -163,11 +99,11 @@ export const BoardDetails = () => {
         <div className="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              {board.name}
+              {currentBoard?.name}
             </h1>
 
             <p className="text-gray-500 dark:text-gray-400 mt-2">
-              {board.description}
+              {currentBoard?.description}
             </p>
           </div>
 
@@ -183,8 +119,8 @@ export const BoardDetails = () => {
         onDragEnd={handleDragEnd}
         onDragCancel={() => setActiveTask(null)}
       >
-        <div className="flex gap-6 overflow-x-auto p-4">
-          {board.columns.map((column) => (
+        <div className="min-h-screen flex gap-6 overflow-x-auto p-4">
+          {columns.map((column) => (
             <Column key={column.id} column={column} />
           ))}
           <AddColumnCard onAddColumn={handleAddColumn} />

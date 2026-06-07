@@ -1,3 +1,5 @@
+import type { ColumnResponse } from "./column";
+
 export interface BoardRequest {
   name: string;
   description?: string;
@@ -10,6 +12,7 @@ export interface BoardResponse {
   description: string;
   createdAt: Date;
   updatedAt: Date;
+  columns: ColumnResponse[];
 }
 
 export interface BoardModalProps {

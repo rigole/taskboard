@@ -19,6 +19,13 @@ const updateBoard = async (
   return response.data;
 };
 
+
+const getBoardById = async (id: string): Promise<BoardResponse> => {
+  const response = await api.get(`/boards/${id}`);
+  return response.data;
+};
+
+
 const deleteBoard = async (id: string): Promise<void> => {
   await api.delete(`/boards/${id}`);
 };
@@ -26,6 +33,7 @@ const deleteBoard = async (id: string): Promise<void> => {
 export const boardService = {
   getUserBoards,
   addBoard,
+  getBoardById,
   deleteBoard,
   updateBoard,
 };

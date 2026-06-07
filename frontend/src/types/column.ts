@@ -4,12 +4,14 @@ export interface ColumnRequest {
   name: string;
   boardId: string;
   position: number; 
+  tasks: Task[];
 }
 
 export interface ColumnResponse {
   id: string;
   name: string;
   position: number; 
+  tasks: Task[];
   createdAt: Date;
   updatedAt: Date;
 }
