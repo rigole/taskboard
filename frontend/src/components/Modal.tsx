@@ -5,7 +5,7 @@ import { useBoardState } from "../store/boardStore.ts";
 export default function BoardModal({ open, onClose, board }: BoardModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const { addBoard, updateBoard, error, getUserBoards } = useBoardState();
+  const { addBoard, updateBoard, getUserBoards } = useBoardState();
 
   useEffect(() => {
     if (board) {
