@@ -62,7 +62,7 @@ jobs:
 
       - name: Build React app
         working-directory: ./frontend
-        run: npm run build -- --configuration production
+        run: npm run build
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
