@@ -7,8 +7,6 @@ import { Link, useNavigate } from "react-router-dom";
 export const BoardPage = () => {
   const boardsUser = useBoardState((state) => state.getUserBoards);
   const boards = useBoardState((state) => state.boards);
-  const isLoading = useBoardState((state) => state.loading);
-  const boardError = useBoardState((state) => state.error);
   const navigate = useNavigate();
 
   useEffect(() => {

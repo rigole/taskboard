@@ -2,9 +2,7 @@ import {
   RectangleGroupIcon,
   ClockIcon,
   CheckCircleIcon,
-  PlusIcon,
-  MoonIcon,
-  SunIcon,
+  PlusIcon
 } from "@heroicons/react/24/outline";
 import { Header } from "../components/Header.tsx";
 import { useBoardState } from "../store/boardStore.ts";
@@ -16,8 +14,6 @@ import { Link, useNavigate } from "react-router-dom";
 export const ProfilePage = () => {
   const boardsUser = useBoardState((state) => state.getUserBoards);
   const boards = useBoardState((state) => state.boards);
-  const isLoading = useBoardState((state) => state.loading);
-  const boardError = useBoardState((state) => state.error);
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { PlusIcon, ArrowsUpDownIcon } from "@heroicons/react/24/outline";
+import {  ArrowsUpDownIcon } from "@heroicons/react/24/outline";
 import { Header } from "./Header";
 import {
   DndContext,
