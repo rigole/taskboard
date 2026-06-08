@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useColumnState } from "../store/columnStore";
 import type { ColumnModalProps } from "../types/column.ts";
