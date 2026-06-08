@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { BoardModalProps } from "../types/board";
 import toast from "react-hot-toast";
 import { useBoardState } from "../store/boardStore.ts";
+
 export default function BoardModal({ open, onClose, board }: BoardModalProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -39,7 +40,7 @@ export default function BoardModal({ open, onClose, board }: BoardModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-6">
+        <h2 className="text-xl dark:text-white font-semibold mb-6">
           {board?.id ? "Edit Board" : "Create Board"}
         </h2>
 
@@ -48,7 +49,7 @@ export default function BoardModal({ open, onClose, board }: BoardModalProps) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Board name"
-            className="w-full p-3 rounded-lg border dark:bg-gray-800"
+            className="w-full p-3 rounded-lg border dark:text-white dark:bg-gray-800"
           />
 
           <textarea
@@ -56,12 +57,12 @@ export default function BoardModal({ open, onClose, board }: BoardModalProps) {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Board description"
             rows={4}
-            className="w-full p-3 rounded-lg border dark:bg-gray-800"
+            className="w-full p-3 rounded-lg border dark:text-white dark:bg-gray-800"
           />
         </div>
 
         <div className="flex justify-end gap-3 mt-6">
-          <button onClick={onClose} className="px-4 py-2 border rounded-lg">
+          <button onClick={onClose} className="px-4 py-2 border rounded-lg dark:text-white dark:border-gray-700">
             Cancel
           </button>
 

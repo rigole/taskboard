@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import {  ArrowsUpDownIcon } from "@heroicons/react/24/outline";
+import { ArrowsUpDownIcon } from "@heroicons/react/24/outline";
 import { Header } from "./Header";
 import {
   DndContext,
@@ -16,28 +16,29 @@ import type { Task } from "../types/task";
 import { AddColumnCard } from "./AddColumnCard";
 import { useColumnState } from "../store/columnStore";
 import { useBoardState } from "../store/boardStore";
+import ColumnModal from "./ColumnModal";
 
 export const BoardDetails = () => {
-
   const { id } = useParams();
   const getBoardById = useBoardState((state) => state.getBoardById);
   const columns = useColumnState((state) => state.columns);
   const getBoardColumns = useColumnState((state) => state.getBoardColumns);
   const updateColumn = useColumnState((state) => state.updateColumn);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const userName = localStorage.getItem("username");
   const currentBoard = useBoardState((state) => state.board);
+  const loadColumns = async () => {
+    try {
+      if (id) {
+        await getBoardColumns(id);
+      }
+    } catch (error) {
+      console.error("Failed to load columns:", error);
+    }
+  };
 
   useEffect(() => {
-    const loadColumns = async () => {
-      try {
-        if (id) {
-          await getBoardColumns(id);
-        }
-      } catch (error) {
-        console.error("Failed to load columns:", error);
-      }
-    };
     loadColumns();
     if (id) {
       getBoardById(id);
@@ -72,10 +73,7 @@ export const BoardDetails = () => {
   };
 
   const handleAddColumn = () => {
-    // let newColumn;
-    console.log("Add Column");
-
-    // setColumns((prev) => [...prev, newColumn]);
+    setIsModalOpen(true);
   };
 
   const findColumn = (taskId: string) => {
@@ -132,6 +130,8 @@ export const BoardDetails = () => {
           {activeTask ? <TaskCard task={activeTask} /> : null}
         </DragOverlay>
       </div>
+
+      <ColumnModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

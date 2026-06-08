@@ -2,13 +2,13 @@ import {
   RectangleGroupIcon,
   ClockIcon,
   CheckCircleIcon,
-  PlusIcon
+  PlusIcon,
 } from "@heroicons/react/24/outline";
 import { Header } from "../components/Header.tsx";
 import { useBoardState } from "../store/boardStore.ts";
 import { useEffect, useState } from "react";
 import type { BoardResponse } from "../types/board.ts";
-import BoardModal from "../components/Modal.tsx";
+import BoardModal from "../components/BoardModal.tsx";
 import { Link, useNavigate } from "react-router-dom";
 
 export const ProfilePage = () => {
@@ -76,9 +76,7 @@ export const ProfilePage = () => {
             <h2 className="text-2xl font-bold">My Boards</h2>
 
             <button className="text-indigo-600 font-medium cursor-pointer">
-              <Link to="/boards">
-                View All
-              </Link>
+              <Link to="/boards">View All</Link>
             </button>
           </div>
 

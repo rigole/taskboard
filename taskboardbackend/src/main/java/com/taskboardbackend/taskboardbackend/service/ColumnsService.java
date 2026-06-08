@@ -14,7 +14,9 @@ import com.taskboardbackend.taskboardbackend.repository.ColumnRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public class ColumnsService {
         return columnRepository.findByBoardId(boardId).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    @Transactional
     public ColumnResponse createColumn(ColumnRequest columnRequest) {
         Board boardColumn = boardRepository.findById(columnRequest.getBoardId())
                 .orElseThrow(() -> new RuntimeException("Board not found"));
@@ -73,7 +76,9 @@ public class ColumnsService {
     }
 
     private ColumnResponse mapToResponse(Columns columns) {
-        List<TaskResponse> tasks = columns.getTasks()
+        List<TaskResponse> tasks = columns.getTasks() == null
+                ? Collections.emptyList()
+                : columns.getTasks()
                 .stream()
                 .map(this::mapTaskToResponse)
                 .collect(Collectors.toList());
