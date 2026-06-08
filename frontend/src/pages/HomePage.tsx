@@ -102,7 +102,7 @@ export const HomePage = () => {
       </nav>
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left Content */}
+        
           <div>
             <span className="inline-block bg-indigo-600/20 text-indigo-400 px-4 py-2 rounded-full text-sm">
               Modern Project Management
@@ -118,7 +118,7 @@ export const HomePage = () => {
               elegant platform built for productivity.
             </p>
 
-            {/* CTA Buttons */}
+            
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Link
                 to="/register"
@@ -166,11 +166,11 @@ export const HomePage = () => {
             </div>
           </div>
 
-          {/* Right Side Board Preview */}
+          
           <div className="relative">
             <div className="bg-gray-900 border border-gray-800 rounded-3xl p-4 sm:p-6 shadow-2xl overflow-hidden">
               <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin">
-                {/* TODO */}
+                
                 <div className="bg-gray-950 rounded-2xl p-4 min-w-[260px] sm:min-w-[300px]">
                   <div className="flex items-center justify-between mb-5">
                     <h3 className="font-semibold text-white">To Do</h3>
@@ -212,7 +212,7 @@ export const HomePage = () => {
                   </div>
                 </div>
 
-                {/* IN PROGRESS */}
+                
                 <div className="bg-gray-950 rounded-2xl p-4 min-w-[260px] sm:min-w-[300px]">
                   <div className="flex items-center justify-between mb-5">
                     <h3 className="font-semibold text-white">In Progress</h3>
@@ -236,7 +236,7 @@ export const HomePage = () => {
                   </div>
                 </div>
 
-                {/* DONE */}
+                
                 <div className="bg-gray-950 rounded-2xl p-4 min-w-[260px] sm:min-w-[300px]">
                   <div className="flex items-center justify-between mb-5">
                     <h3 className="font-semibold text-white">Done</h3>
