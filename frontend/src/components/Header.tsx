@@ -6,9 +6,10 @@ import {
   SunIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+
 import BoardModal from "./BoardModal";
 import type { BoardResponse } from "../types/board";
+import { useBoardState } from "../store/boardStore";
 interface HeaderProps {
   userName: string | null;
 }
@@ -17,6 +18,7 @@ export const Header = ({ userName }: HeaderProps) => {
   const { darkMode, toggleTheme } = useThemeStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const currentBoard = useBoardState((state) => state.board);
   const [selectedBoard, setSelectedBoard] = useState<BoardResponse | null>(
     null,
   );
@@ -53,10 +55,18 @@ export const Header = ({ userName }: HeaderProps) => {
               setSelectedBoard(null);
               setIsModalOpen(true);
             }}
-            className="bg-indigo-600 text-white px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-indigo-500 transition shadow-sm font-medium"
+            className="bg-indigo-600 text-white px-5 py-3 rounded-xl
+             flex items-center gap-2 hover:bg-indigo-500 transition 
+             shadow-sm font-medium"
           >
             Create Board
           </button>
+
+          {currentBoard && (
+            <button className="bg-indigo-600 text-white px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-indigo-500 transition shadow-sm font-medium">
+              Add Task
+            </button>
+          )}
         </div>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -84,6 +94,11 @@ export const Header = ({ userName }: HeaderProps) => {
           >
             Add Board
           </button>
+          {currentBoard && (
+            <button className="bg-indigo-600 hover:bg-indigo-500 text-center px-5 py-3 rounded-lg text-white">
+              Add Task
+            </button>
+          )}
           <button
             onClick={toggleTheme}
             className="flex items-center justify-center gap-2 p-3 rounded-lg bg-indigo-500 dark:bg-gray-800 text-white"
