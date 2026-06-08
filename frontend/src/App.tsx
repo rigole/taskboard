@@ -25,8 +25,25 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/boards" element={<BoardPage />} />
-          <Route path="/boards/:id" element={<BoardDetails />} />
+
+          <Route
+           path="/boards"
+           element={
+            <ProtectedRoute>
+                <BoardPage />
+            </ProtectedRoute>
+           } />
+          
+          <Route 
+          path="/boards/:id"
+
+          element={
+           <ProtectedRoute> 
+              <BoardDetails />
+          </ProtectedRoute>
+          } 
+          />
+
           <Route
             path="/login"
             element={
