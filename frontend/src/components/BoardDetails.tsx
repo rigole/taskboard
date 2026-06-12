@@ -17,16 +17,18 @@ import { AddColumnCard } from "./AddColumnCard";
 import { useColumnState } from "../store/columnStore";
 import { useBoardState } from "../store/boardStore";
 import ColumnModal from "./ColumnModal";
+import type { ColumnRequest } from "../types/column";
 
 export const BoardDetails = () => {
   const { id } = useParams();
   const getBoardById = useBoardState((state) => state.getBoardById);
   const columns = useColumnState((state) => state.columns);
   const getBoardColumns = useColumnState((state) => state.getBoardColumns);
-  const updateColumn = useColumnState((state) => state.updateColumn);
+  const moveTask = useColumnState((state) => state.moveTask);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const userName = localStorage.getItem("username");
+  const setColumns = useColumnState((state) => state.setColumns);
   const currentBoard = useBoardState((state) => state.board);
   const loadColumns = async () => {
     try {
@@ -45,41 +47,53 @@ export const BoardDetails = () => {
     }
   }, [getBoardColumns, id]);
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
+const handleDragEnd = async (event: DragEndEvent) => {
+  const { active, over } = event;
 
-    if (!over || active.id === over.id) {
-      return;
+  if (!over || active.id === over.id) return;
+
+  const activeColumn = columns.find((col) =>
+    col.tasks.some((task) => task.id === active.id)
+  );
+  const overColumn = columns.find(
+    (col) =>
+      col.tasks.some((task) => task.id === over.id) || col.id === over.id
+  );
+
+  if (!activeColumn || !overColumn) return;
+
+  if (activeColumn.id !== overColumn.id) {
+    const overTaskIndex = overColumn.tasks.findIndex((t) => t.id === over.id);
+    const targetPosition =
+      overTaskIndex !== -1 ? overTaskIndex : overColumn.tasks.length;
+
+    try {
+      await moveTask(active.id as string, {
+        targetColumnId: overColumn.id as string,
+        position: targetPosition,
+      });
+    } catch (error) {
+      console.error("Failed to move task:", error);
     }
+  } else {
+    const oldIndex = activeColumn.tasks.findIndex((t) => t.id === active.id);
+    const newIndex = activeColumn.tasks.findIndex((t) => t.id === over.id);
 
-    const activeColumn = findColumn(active.id as string);
-    const overColumn = findColumn(over.id as string);
+    if (oldIndex === newIndex) return;
 
-    if (!activeColumn || !overColumn) {
-      return;
+    try {
+      await moveTask(active.id as string, {
+        targetColumnId: activeColumn.id as string,
+        position: newIndex,
+      });
+    } catch (error) {
+      console.error("Failed to reorder task:", error);
     }
-    const column = columns.find((column) =>
-      column.tasks.some((task) => task.id === active.id),
-    );
-
-    if (!column) return;
-
-    const oldIndex = column.tasks.findIndex((task) => task.id === active.id);
-    const newIndex = column.tasks.findIndex((task) => task.id === over.id);
-
-    const reorderedTasks = arrayMove(column.tasks, oldIndex, newIndex);
-
-    await updateColumn(column.id, { tasks: reorderedTasks });
-  };
+  }
+};
 
   const handleAddColumn = () => {
     setIsModalOpen(true);
-  };
-
-  const findColumn = (taskId: string) => {
-    return columns.find((column) =>
-      column.tasks.some((task) => task.id === taskId),
-    );
   };
 
   const handleDragStart = (event: DragStartEvent) => {

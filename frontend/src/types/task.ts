@@ -35,3 +35,8 @@ export interface Task {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface MoveTaskRequest {
+  targetColumnId: string;
+  position?: number;
+}

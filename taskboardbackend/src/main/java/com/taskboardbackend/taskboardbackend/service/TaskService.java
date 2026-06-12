@@ -1,6 +1,7 @@
 package com.taskboardbackend.taskboardbackend.service;
 
 
+import com.taskboardbackend.taskboardbackend.dto.request.MoveTaskRequest;
 import com.taskboardbackend.taskboardbackend.dto.request.TaskRequest;
 import com.taskboardbackend.taskboardbackend.dto.response.TaskResponse;
 import com.taskboardbackend.taskboardbackend.model.Columns;
@@ -107,6 +108,68 @@ public class TaskService {
             throw new RuntimeException("User not authorized");
         }
         taskRepository.delete(task);
+    }
+
+    @Transactional
+    public TaskResponse moveTask(UUID taskId, MoveTaskRequest moveTaskRequest, User user) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!task.getColumn().getBoard().getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("User not authorized");
+        }
+
+        Columns targetColumn = columnRepository.findById(moveTaskRequest.getTargetColumnId())
+                .orElseThrow(() -> new RuntimeException("Column not found"));
+        Columns sourceColumn = task.getColumn();
+
+        boolean isSameColumn = sourceColumn.getId().equals(targetColumn.getId());
+
+        if (isSameColumn) {
+            List<Task> tasks = sourceColumn.getTasks().stream()
+                    .filter(t -> !t.getId().equals(taskId))
+                    .sorted(Comparator.comparingInt(Task::getPosition))
+                    .collect(Collectors.toList());
+
+            int targetPosition = moveTaskRequest.getPosition() != null
+                    ? Math.min(moveTaskRequest.getPosition(), tasks.size())
+                    : tasks.size();
+
+            tasks.add(targetPosition, task);
+
+            for (int i = 0; i < tasks.size(); i++) {
+                tasks.get(i).setPosition(i);
+            }
+            taskRepository.saveAll(tasks);
+
+        } else {
+            List<Task> sourceTasks = sourceColumn.getTasks().stream()
+                    .filter(t -> !t.getId().equals(taskId))
+                    .sorted(Comparator.comparingInt(Task::getPosition))
+                    .collect(Collectors.toList());
+
+            for (int i = 0; i < sourceTasks.size(); i++) {
+                sourceTasks.get(i).setPosition(i);
+            }
+            taskRepository.saveAll(sourceTasks);
+            List<Task> targetTasks = targetColumn.getTasks().stream()
+                    .sorted(Comparator.comparingInt(Task::getPosition))
+                    .collect(Collectors.toList());
+
+            int targetPosition = moveTaskRequest.getPosition() != null
+                    ? Math.min(moveTaskRequest.getPosition(), targetTasks.size())
+                    : targetTasks.size();
+
+            targetTasks.add(targetPosition, task);
+            task.setColumn(targetColumn);
+
+            for (int i = 0; i < targetTasks.size(); i++) {
+                targetTasks.get(i).setPosition(i);
+            }
+            taskRepository.saveAll(targetTasks);
+        }
+
+        return mapToResponse(taskRepository.save(task));
     }
 
     private TaskResponse mapToResponse(Task task) {

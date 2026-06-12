@@ -1,37 +1,38 @@
 import api from "./api";
 import type { ColumnRequest, ColumnResponse } from "../types/column";
+import type { MoveTaskRequest } from "../types/task";
 
-const getBoardColumns = async (
-  boardId: string,
-): Promise<ColumnResponse[]> => {
-  const response = await api.get(`/columns/${boardId}`, );
+const getBoardColumns = async (boardId: string): Promise<ColumnResponse[]> => {
+  const response = await api.get(`/columns/${boardId}`);
   return response.data;
 };
 
-const addColumn = async (
-  data: ColumnRequest,
-): Promise<ColumnResponse> => {
+const addColumn = async (data: ColumnRequest): Promise<ColumnResponse> => {
   const response = await api.post(`/columns`, data);
   return response.data;
-}
+};
 
 const updateColumn = async (
   columnId: string,
-  data: Partial<ColumnRequest>
+  data: Partial<ColumnRequest>,
 ): Promise<ColumnResponse> => {
   const response = await api.put(`/columns/${columnId}`, data);
   return response.data;
 };
 
-const deleteColumn = async (
-  columnId: string
-): Promise<void> => {
+const deleteColumn = async (columnId: string): Promise<void> => {
   await api.delete(`/columns/${columnId}`);
+};
+
+const moveTask = async (taskId: string, data: MoveTaskRequest) => {
+  const response = await api.patch(`/columns/${taskId}/move`, data);
+  return response.data;
 };
 
 export const columnService = {
   getBoardColumns,
   addColumn,
   updateColumn,
-  deleteColumn
+  deleteColumn,
+  moveTask,
 };
