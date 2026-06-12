@@ -1,10 +1,18 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Task } from "../types/task";
-
 interface TaskCardProps {
   task: Task;
 }
+import {
+  EllipsisVerticalIcon,
+  Bars3Icon,
+  EyeIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
+
+import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 
 export const TaskCard = ({ task }: TaskCardProps) => {
   const {
@@ -13,7 +21,7 @@ export const TaskCard = ({ task }: TaskCardProps) => {
     setNodeRef,
     transform,
     transition,
-    isDragging, 
+    isDragging,
   } = useSortable({
     id: task.id,
   });
@@ -22,12 +30,13 @@ export const TaskCard = ({ task }: TaskCardProps) => {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
   if (isDragging) {
     return (
       <div
         ref={setNodeRef}
         style={style}
-        className="border-2 border-dashed border-gray-300 dark:border-gray-700 bg-transparent rounded-xl h-[100px] opacity-40"
+        className="h-28 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 opacity-40"
       />
     );
   }
@@ -36,16 +45,98 @@ export const TaskCard = ({ task }: TaskCardProps) => {
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm cursor-grab touch-none"
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition"
     >
-      <h3 className="font-medium text-gray-900 dark:text-white">
-        {task.title}
-      </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-        {task.description}
-      </p>
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-3">
+          <button
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-indigo-500"
+          >
+            <Bars3Icon className="w-5 h-5" />
+          </button>
+
+          <h3 className="font-semibold text-gray-900 dark:text-white">
+            {task.title}
+          </h3>
+        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          className="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+        >
+          <Menu as="div" className="relative">
+            <MenuButton
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <EllipsisVerticalIcon className="w-5 h-5 text-gray-500" />
+            </MenuButton>
+
+            <MenuItems
+              anchor="bottom end"
+              className="z-50 mt-2 w-48 origin-top-right rounded-xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black/5 dark:ring-white/10 focus:outline-none"
+            >
+              <div className="p-1">
+                <MenuItem>
+                  {({ focus }) => (
+                    <button
+                      onClick={() => console.log("View", task.id)}
+                      className={`${
+                        focus ? "bg-gray-100 dark:bg-gray-700" : ""
+                      } flex w-full text-gray-900 dark:text-white items-center gap-3 rounded-lg px-3 py-2 text-sm`}
+                    >
+                      <EyeIcon className="w-5 h-5" />
+                      View Details
+                    </button>
+                  )}
+                </MenuItem>
+
+                <MenuItem>
+                  {({ focus }) => (
+                    <button
+                      onClick={() => console.log("Edit", task.id)}
+                      className={`${
+                        focus ? "bg-gray-100 dark:bg-gray-700" : ""
+                      } flex w-full text-gray-900 dark:text-white items-center gap-3 rounded-lg px-3 py-2 text-sm`}
+                    >
+                      <PencilSquareIcon className="w-5 h-5" />
+                      Edit Task
+                    </button>
+                  )}
+                </MenuItem>
+
+                <MenuItem>
+                  {({ focus }) => (
+                    <button
+                      onClick={() => console.log("Delete", task.id)}
+                      className={`${
+                        focus ? "bg-red-100 dark:bg-red-900/30" : ""
+                      } flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-600 dark:text-red-400`}
+                    >
+                      <TrashIcon className="w-5 h-5" />
+                      Delete Task
+                    </button>
+                  )}
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </Menu>
+        </button>
+      </div>
+      <div
+        onClick={() => {
+          console.log("Open task drawer");
+        }}
+        className="cursor-pointer px-4 pb-4"
+      >
+        <p className="line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
+          {task.description}
+        </p>
+      </div>
     </div>
   );
 };
