@@ -6,10 +6,10 @@ import {
   closestCorners,
   type DragEndEvent,
   DragOverlay,
+  pointerWithin,
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { Column } from "./Column";
-import { arrayMove } from "@dnd-kit/sortable";
 import { useEffect, useState } from "react";
 import { TaskCard } from "./TaskCard";
 import type { Task } from "../types/task";
@@ -17,7 +17,6 @@ import { AddColumnCard } from "./AddColumnCard";
 import { useColumnState } from "../store/columnStore";
 import { useBoardState } from "../store/boardStore";
 import ColumnModal from "./ColumnModal";
-import type { ColumnRequest } from "../types/column";
 
 export const BoardDetails = () => {
   const { id } = useParams();
@@ -28,7 +27,6 @@ export const BoardDetails = () => {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const userName = localStorage.getItem("username");
-  const setColumns = useColumnState((state) => state.setColumns);
   const currentBoard = useBoardState((state) => state.board);
   const loadColumns = async () => {
     try {
@@ -49,7 +47,6 @@ export const BoardDetails = () => {
 
 const handleDragEnd = async (event: DragEndEvent) => {
   const { active, over } = event;
-
   if (!over || active.id === over.id) return;
 
   const activeColumn = columns.find((col) =>
@@ -103,7 +100,11 @@ const handleDragEnd = async (event: DragEndEvent) => {
 
     setActiveTask(task ?? null);
   };
-
+const customCollisionStrategy = (args: any) => {
+  const pointerCollisions = pointerWithin(args);
+  if (pointerCollisions.length > 0) return pointerCollisions;
+  return closestCorners(args);
+};
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Header userName={userName ?? ""} />
@@ -126,8 +127,8 @@ const handleDragEnd = async (event: DragEndEvent) => {
       </div>
 
       <DndContext
-        collisionDetection={closestCorners}
         onDragStart={handleDragStart}
+        collisionDetection={customCollisionStrategy}
         onDragEnd={handleDragEnd}
         onDragCancel={() => setActiveTask(null)}
       >
