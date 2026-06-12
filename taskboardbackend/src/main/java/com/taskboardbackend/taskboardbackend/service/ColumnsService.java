@@ -45,6 +45,19 @@ public class ColumnsService {
         return mapToResponse(columnRepository.save(columns));
     }
 
+    public ColumnResponse updateColumn(UUID columnId, ColumnRequest columnRequest, User user) {
+        Columns columns = columnRepository.findById(columnId).orElseThrow(() -> new RuntimeException("Column not found"));
+        if (!columns.getBoard().getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized");
+        }
+        Board boardColumn = boardRepository.findById(columnRequest.getBoardId())
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+        columns.setName(columnRequest.getName());
+        columns.setPosition(columnRequest.getPosition());
+        columns.setBoard(boardColumn);
+        return mapToResponse(columnRepository.save(columns));
+    }
+
     public void deleteColumn(UUID columnId, User user) {
         Columns columns = columnRepository.findById(columnId).orElseThrow(() -> new RuntimeException("Column not found"));
         if (!columns.getBoard().getUser().getId().equals(user.getId())) {

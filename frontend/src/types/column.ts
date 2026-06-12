@@ -5,6 +5,7 @@ export interface ColumnRequest {
   boardId: string;
   position: number;
   tasks?: Task[];
+  updatedAt?: Date;
 }
 
 export interface ColumnResponse {
