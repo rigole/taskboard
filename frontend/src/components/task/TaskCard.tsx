@@ -1,15 +1,25 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Task } from "../types/task";
+import type { Task } from "../../types/task";
 interface TaskCardProps {
   task: Task;
 }
+
+import profileImg from "../../assets/profile.png";
+
+const storedImage = localStorage.getItem("image");
+const imgProfile =
+  storedImage && storedImage !== "null" && storedImage !== "undefined"
+    ? storedImage
+    : null;
+
 import {
   EllipsisVerticalIcon,
   Bars3Icon,
   EyeIcon,
   PencilSquareIcon,
   TrashIcon,
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
@@ -136,6 +146,26 @@ export const TaskCard = ({ task }: TaskCardProps) => {
         <p className="line-clamp-2 text-sm text-gray-500 dark:text-gray-400">
           {task.description}
         </p>
+        <div className="flex items-center justify-between mt-4">
+          <span className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+            <img
+              src={imgProfile || profileImg}
+              alt="user"
+              className="w-6 h-6 rounded-full"
+            />
+            {task.assignee}
+          </span>
+          <span className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+            <CalendarIcon className="w-5 h-5" />{" "}
+            {task.createdAt
+              ? new Date(task.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : ""}
+          </span>
+        </div>
       </div>
     </div>
   );

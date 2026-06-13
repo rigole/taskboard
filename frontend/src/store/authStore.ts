@@ -29,6 +29,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ user: response, loading: false, error: null });
       localStorage.setItem("token", response.token);
       localStorage.setItem("username", response.fullName);
+      localStorage.setItem("image", response.image);
     } catch (error: unknown) {
       let serverMessage = "Invalid data or server error";
       if (axios.isAxiosError(error)) {
@@ -45,6 +46,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ user: response, loading: false, error: null });
       localStorage.setItem("token", response.token);
       localStorage.setItem("username", response.fullName);
+      localStorage.setItem("image", response.image); 
     } catch (error: unknown) {
       let serverMessage = "Invalid data or server error";
       if (axios.isAxiosError(error)) {

@@ -11,17 +11,19 @@ import {
 } from "@dnd-kit/core";
 import { Column } from "./Column";
 import { useEffect, useState } from "react";
-import { TaskCard } from "./TaskCard";
+import { TaskCard } from "./task/TaskCard";
 import type { Task } from "../types/task";
 import { AddColumnCard } from "./AddColumnCard";
 import { useColumnState } from "../store/columnStore";
 import { useBoardState } from "../store/boardStore";
 import ColumnModal from "./ColumnModal";
+import TaskDrawer from "./task/TaskDrawer";
 
 export const BoardDetails = () => {
   const { id } = useParams();
   const getBoardById = useBoardState((state) => state.getBoardById);
   const columns = useColumnState((state) => state.columns);
+  const [open, setOpen] = useState(false);
   const getBoardColumns = useColumnState((state) => state.getBoardColumns);
   const moveTask = useColumnState((state) => state.moveTask);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -45,49 +47,49 @@ export const BoardDetails = () => {
     }
   }, [getBoardColumns, id]);
 
-const handleDragEnd = async (event: DragEndEvent) => {
-  const { active, over } = event;
-  if (!over || active.id === over.id) return;
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-  const activeColumn = columns.find((col) =>
-    col.tasks.some((task) => task.id === active.id)
-  );
-  const overColumn = columns.find(
-    (col) =>
-      col.tasks.some((task) => task.id === over.id) || col.id === over.id
-  );
+    const activeColumn = columns.find((col) =>
+      col.tasks.some((task) => task.id === active.id),
+    );
+    const overColumn = columns.find(
+      (col) =>
+        col.tasks.some((task) => task.id === over.id) || col.id === over.id,
+    );
 
-  if (!activeColumn || !overColumn) return;
+    if (!activeColumn || !overColumn) return;
 
-  if (activeColumn.id !== overColumn.id) {
-    const overTaskIndex = overColumn.tasks.findIndex((t) => t.id === over.id);
-    const targetPosition =
-      overTaskIndex !== -1 ? overTaskIndex : overColumn.tasks.length;
+    if (activeColumn.id !== overColumn.id) {
+      const overTaskIndex = overColumn.tasks.findIndex((t) => t.id === over.id);
+      const targetPosition =
+        overTaskIndex !== -1 ? overTaskIndex : overColumn.tasks.length;
 
-    try {
-      await moveTask(active.id as string, {
-        targetColumnId: overColumn.id as string,
-        position: targetPosition,
-      });
-    } catch (error) {
-      console.error("Failed to move task:", error);
+      try {
+        await moveTask(active.id as string, {
+          targetColumnId: overColumn.id as string,
+          position: targetPosition,
+        });
+      } catch (error) {
+        console.error("Failed to move task:", error);
+      }
+    } else {
+      const oldIndex = activeColumn.tasks.findIndex((t) => t.id === active.id);
+      const newIndex = activeColumn.tasks.findIndex((t) => t.id === over.id);
+
+      if (oldIndex === newIndex) return;
+
+      try {
+        await moveTask(active.id as string, {
+          targetColumnId: activeColumn.id as string,
+          position: newIndex,
+        });
+      } catch (error) {
+        console.error("Failed to reorder task:", error);
+      }
     }
-  } else {
-    const oldIndex = activeColumn.tasks.findIndex((t) => t.id === active.id);
-    const newIndex = activeColumn.tasks.findIndex((t) => t.id === over.id);
-
-    if (oldIndex === newIndex) return;
-
-    try {
-      await moveTask(active.id as string, {
-        targetColumnId: activeColumn.id as string,
-        position: newIndex,
-      });
-    } catch (error) {
-      console.error("Failed to reorder task:", error);
-    }
-  }
-};
+  };
 
   const handleAddColumn = () => {
     setIsModalOpen(true);
@@ -100,11 +102,11 @@ const handleDragEnd = async (event: DragEndEvent) => {
 
     setActiveTask(task ?? null);
   };
-const customCollisionStrategy = (args: any) => {
-  const pointerCollisions = pointerWithin(args);
-  if (pointerCollisions.length > 0) return pointerCollisions;
-  return closestCorners(args);
-};
+  const customCollisionStrategy = (args: any) => {
+    const pointerCollisions = pointerWithin(args);
+    if (pointerCollisions.length > 0) return pointerCollisions;
+    return closestCorners(args);
+  };
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Header userName={userName ?? ""} />
@@ -147,6 +149,17 @@ const customCollisionStrategy = (args: any) => {
       </div>
 
       <ColumnModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      <button
+        onClick={() => setOpen(true)}
+        className="rounded bg-indigo-600 px-4 py-2 text-white"
+      >
+        Open Drawer
+      </button>
+
+      <TaskDrawer open={open} onClose={() => setOpen(false)}>
+        <h1 className="text-2xl font-bold">Hello Drawer</h1>
+      </TaskDrawer>
     </div>
   );
 };
