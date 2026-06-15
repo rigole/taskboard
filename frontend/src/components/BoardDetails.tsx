@@ -17,13 +17,13 @@ import { AddColumnCard } from "./AddColumnCard";
 import { useColumnState } from "../store/columnStore";
 import { useBoardState } from "../store/boardStore";
 import ColumnModal from "./ColumnModal";
-import TaskDrawer from "./task/TaskDrawer";
+
 
 export const BoardDetails = () => {
   const { id } = useParams();
   const getBoardById = useBoardState((state) => state.getBoardById);
   const columns = useColumnState((state) => state.columns);
-  const [open, setOpen] = useState(false);
+  
   const getBoardColumns = useColumnState((state) => state.getBoardColumns);
   const moveTask = useColumnState((state) => state.moveTask);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
@@ -149,17 +149,6 @@ export const BoardDetails = () => {
       </div>
 
       <ColumnModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
-
-      <button
-        onClick={() => setOpen(true)}
-        className="rounded bg-indigo-600 px-4 py-2 text-white"
-      >
-        Open Drawer
-      </button>
-
-      <TaskDrawer open={open} onClose={() => setOpen(false)}>
-        <h1 className="text-2xl font-bold">Hello Drawer</h1>
-      </TaskDrawer>
     </div>
   );
 };
