@@ -22,7 +22,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @GetMapping("/{assignee}")
-    public ResponseEntity<List<TaskResponse>> getTasksByAssignee(@PathVariable String assignee) {
+    public ResponseEntity <List<TaskResponse>> getTasksByAssignee(@PathVariable String assignee) {
         return ResponseEntity.ok(taskService.getTasksByAssignee(assignee));
     }
 

@@ -18,7 +18,7 @@ export interface LoginRequest {
 export interface AuthResponse {
   token: string;
   fullName: string;
-  image?: string;
+  image: string;
   email: string;
   role: "ADMIN" | "USER";
 }
