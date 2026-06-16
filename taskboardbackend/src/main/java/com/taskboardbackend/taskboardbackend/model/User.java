@@ -36,16 +36,19 @@ public class User implements UserDetails {
     @Column(name = "name", nullable = false)
     private String fullName;
 
+    private String image;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder
-    public User(UUID id, String email, String password, String role, String fullName, LocalDateTime createdAt) {
+    public User(UUID id, String email, String password, String role, String fullName, String image, LocalDateTime createdAt) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
         this.fullName = fullName;
+        this.image = image;
         this.createdAt = createdAt;
     }
 

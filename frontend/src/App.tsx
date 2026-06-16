@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import GuestRoute from "./utils/GuestRoute.tsx";
 import ProtectedRoute from "./utils/ProtectedRoute.tsx";
 import { BoardPage } from "./pages/BoardPage.tsx";
+import { TaskFormPage } from "./pages/TaskFormPage.tsx";
 import { BoardDetails } from "./components/BoardDetails.tsx";
 
 function App() {
@@ -33,6 +34,25 @@ function App() {
                 <BoardPage />
             </ProtectedRoute>
            } />
+
+           <Route
+            path="task/new"
+            element={
+              <ProtectedRoute>
+                <TaskFormPage/>
+              </ProtectedRoute>
+            }
+           />
+
+           <Route
+            path="/tasks/:taskId/edit"
+            element={
+              <ProtectedRoute>
+                <TaskFormPage/>
+              </ProtectedRoute>
+            }
+           />
+          
           
           <Route 
           path="/boards/:id"
