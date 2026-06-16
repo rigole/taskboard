@@ -69,3 +69,9 @@ jobs:
         with:
           name: frontend-build
           path: frontend/dist/
+
+      - name: Run Frontend Tests
+        working-directory: ./frontend
+        run: npm test --watch=false --browsers=ChromeHeadless --no-progress
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
