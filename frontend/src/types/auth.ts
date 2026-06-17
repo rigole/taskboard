@@ -1,7 +1,8 @@
 export interface User {
   fullName: string;
   email: string;
-  role: "ADMIN" | "USER";
+  image?:string;
+  role: "ADMIN" | "USER" | "";
 }
 
 export interface RegisterRequest {

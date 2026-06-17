@@ -4,6 +4,7 @@ package com.taskboardbackend.taskboardbackend.service;
 import com.taskboardbackend.taskboardbackend.dto.request.MoveTaskRequest;
 import com.taskboardbackend.taskboardbackend.dto.request.TaskRequest;
 import com.taskboardbackend.taskboardbackend.dto.response.TaskResponse;
+import com.taskboardbackend.taskboardbackend.dto.response.UserResponse;
 import com.taskboardbackend.taskboardbackend.model.Columns;
 import com.taskboardbackend.taskboardbackend.model.Task;
 import com.taskboardbackend.taskboardbackend.model.User;
@@ -170,6 +171,23 @@ public class TaskService {
         }
 
         return mapToResponse(taskRepository.save(task));
+    }
+
+    public List<UserResponse> getAllUsers() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User taskCreatorEmail = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository.findAll().stream().map(this::mapUserToResponse).collect(Collectors.toList());
+    }
+
+    private UserResponse mapUserToResponse(User user) {
+
+        return UserResponse.builder()
+                .image(user.getImage())
+                .fullName(user.getFullName())
+                .role(user.getRole())
+                .email(user.getEmail())
+                .build();
     }
 
     private TaskResponse mapToResponse(Task task) {
