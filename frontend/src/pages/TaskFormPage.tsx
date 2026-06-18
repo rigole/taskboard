@@ -18,10 +18,10 @@ export const TaskFormPage = () => {
   const users = useTaskState((state) => state.users);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const storedImage = localStorage.getItem("image");
-  const imgProfile =
+  const imgProfile: string | undefined =
     storedImage && storedImage !== "null" && storedImage !== "undefined"
       ? storedImage
-      : null;
+      : undefined;
 
   const [formData, setFormData] = useState<TaskRequest>({
     title: "",
@@ -329,12 +329,12 @@ export const TaskFormPage = () => {
                           key={user.id}
                           value={user}
                           className="cursor-pointer select-none px-3 py-2 dark:data-[focus]:bg-gray-800 data-[focus]:bg-white"
-                          >
+                        >
                           {({ selected }) => (
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 <img
-                                  src={profileImg}
+                                  src={imgProfile}
                                   alt={user.fullName}
                                   className="w-8 h-8 rounded-full"
                                 />
