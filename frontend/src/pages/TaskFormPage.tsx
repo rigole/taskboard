@@ -309,7 +309,7 @@ export const TaskFormPage = () => {
                 </label>
                 <Listbox value={selectedUser} onChange={setSelectedUser}>
                   <div className="relative mt-2 ">
-                    <Listbox.Button className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-white dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/80  py-2 pl-3 pr-10 text-left shadow-sm">
+                    <Listbox.Button className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-200 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/80  py-2 pl-3 pr-10 text-left shadow-sm">
                       <div className="flex  items-center gap-2">
                         <img
                           src={profileImg}
@@ -323,17 +323,13 @@ export const TaskFormPage = () => {
                       <ChevronUpDownIcon className="absolute right-2 top-3 h-5 w-5 text-gray-500" />
                     </Listbox.Button>
 
-                    <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg dark:text-white dark:bg-gray-900 shadow-lg border">
+                    <Listbox.Options className="absolute z-10  mt-1 max-h-60 w-full overflow-auto bg-gray-200 rounded-lg dark:text-white dark:bg-gray-900 shadow-lg border">
                       {users.map((user) => (
                         <Listbox.Option
-                          key={user.fullName}
+                          key={user.id}
                           value={user}
-                          className={({ active }) =>
-                            `cursor-pointer select-none px-3 py-2 ${
-                              active ? "bg-indigo-100" : ""
-                            }`
-                          }
-                        >
+                          className="cursor-pointer select-none px-3 py-2 dark:data-[focus]:bg-gray-800 data-[focus]:bg-white"
+                          >
                           {({ selected }) => (
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">

@@ -184,6 +184,7 @@ public class TaskService {
 
         return UserResponse.builder()
                 .image(user.getImage())
+                .id(user.getId())
                 .fullName(user.getFullName())
                 .role(user.getRole())
                 .email(user.getEmail())
