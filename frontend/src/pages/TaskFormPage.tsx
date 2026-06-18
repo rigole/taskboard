@@ -7,6 +7,8 @@ import { Listbox } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/outline";
 import type { User } from "../types/auth";
 import { Header } from "../components/Header";
+import { useBoardState } from "../store/boardStore";
+import { useColumnState } from "../store/columnStore";
 
 export const TaskFormPage = () => {
   const navigate = useNavigate();
@@ -14,6 +16,9 @@ export const TaskFormPage = () => {
   const location = useLocation();
   const isEditMode = !!taskId;
   const userName = localStorage.getItem("username");
+  const currentBoard = useBoardState((state) => state.board);
+  const columns = useColumnState((state) => state.columns);
+  const getBoardColumns = useColumnState((state) => state.getBoardColumns);
   const getUsersForTask = useTaskState((state) => state.getUsersForTask);
   const users = useTaskState((state) => state.users);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -44,8 +49,16 @@ export const TaskFormPage = () => {
       console.error("Failed to load boards:", error);
     }
   };
+  const loadColumns = async () => {
+    try {
+      if (currentBoard) {
+        await getBoardColumns(currentBoard?.id);
+      }
+    } catch (error) {
+      console.error("Failed to loads columns", error);
+    }
+  };
   useEffect(() => {
-    console;
     if (isEditMode) {
       const simulatedFetchedTask = {
         title: "Task 1",
@@ -79,6 +92,7 @@ export const TaskFormPage = () => {
       setFormData(simulatedFetchedTask);
       setComments(simulatedComments);
     } else {
+      console.log("board", currentBoard);
       const queryParams = new URLSearchParams(location.search);
       const preselectedColumn = queryParams.get("columnId");
       if (preselectedColumn) {
@@ -86,10 +100,10 @@ export const TaskFormPage = () => {
       }
     }
     loadUsers();
-  }, [taskId, isEditMode, location.search]);
+    loadColumns();
+  }, [taskId, isEditMode,currentBoard, location.search]);
 
-  const { title, description, priority, dueDate, targetColumnId } =
-    formData;
+  const { title, description, priority, dueDate, targetColumnId } = formData;
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -277,6 +291,39 @@ export const TaskFormPage = () => {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              <div>
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                  Board
+                </label>
+                <select
+                  name="priority"
+                  value={currentBoard?.name}
+                  onChange={handleInputChange}
+                  disabled
+                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
+                >
+                  <option value="LOW"> {currentBoard?.name}</option>
+                  <option value="MEDIUM"> {currentBoard?.name}</option>
+                  <option value="HIGH"> {currentBoard?.name}</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                  Column
+                </label>
+                <select
+                  name="priority"
+                  value={priority}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
+                >
+                  {columns?.map((column) => (
+                    <option value={column.name}> {column.name}</option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
                   Status Stage <span className="text-red-500">*</span>
