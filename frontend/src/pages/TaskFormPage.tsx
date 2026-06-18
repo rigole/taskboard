@@ -88,7 +88,7 @@ export const TaskFormPage = () => {
     loadUsers();
   }, [taskId, isEditMode, location.search]);
 
-  const { title, description, priority, dueDate, targetColumnId, assigneeId } =
+  const { title, description, priority, dueDate, targetColumnId } =
     formData;
 
   const handleInputChange = (
