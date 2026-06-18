@@ -1,12 +1,27 @@
 import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import type { Comment, TaskRequest } from "../types/comment";
+import { useTaskState } from "../store/taskStore";
+import profileImg from "../assets/profile.png";
+import { Listbox } from "@headlessui/react";
+import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/outline";
+import type { User } from "../types/auth";
+import { Header } from "../components/Header";
 
 export const TaskFormPage = () => {
   const navigate = useNavigate();
   const { taskId } = useParams();
   const location = useLocation();
   const isEditMode = !!taskId;
+  const userName = localStorage.getItem("username");
+  const getUsersForTask = useTaskState((state) => state.getUsersForTask);
+  const users = useTaskState((state) => state.users);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const storedImage = localStorage.getItem("image");
+  const imgProfile: string | undefined =
+    storedImage && storedImage !== "null" && storedImage !== "undefined"
+      ? storedImage
+      : undefined;
 
   const [formData, setFormData] = useState<TaskRequest>({
     title: "",
@@ -22,7 +37,15 @@ export const TaskFormPage = () => {
   const [newComment, setNewComment] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  const loadUsers = async () => {
+    try {
+      await getUsersForTask();
+    } catch (error) {
+      console.error("Failed to load boards:", error);
+    }
+  };
   useEffect(() => {
+    console;
     if (isEditMode) {
       const simulatedFetchedTask = {
         title: "Task 1",
@@ -62,6 +85,7 @@ export const TaskFormPage = () => {
         setFormData((prev) => ({ ...prev, targetColumnId: preselectedColumn }));
       }
     }
+    loadUsers();
   }, [taskId, isEditMode, location.search]);
 
   const { title, description, priority, dueDate, targetColumnId, assigneeId } =
@@ -138,214 +162,252 @@ export const TaskFormPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 md:p-12 flex justify-center items-start">
-      <div className="w-full max-w-3xl bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-8 md:p-10">
-        <div className="mb-8 border-b border-gray-200 dark:border-gray-800 pb-5">
-          <div className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-1">
-            {isEditMode
-              ? `Task Identity: TASK-${taskId?.slice(0, 4).toUpperCase()}`
-              : "New Work Entry"}
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-            {isEditMode ? "Edit Issue details" : "Create Issue"}
-          </h1>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="text-sm font-medium bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-3 rounded-xl border border-red-200 dark:border-red-900/50">
-              {error}
+    <>
+      <Header userName={userName ?? ""} />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 md:p-12 flex justify-center items-start">
+        <div className="w-full max-w-3xl bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-8 md:p-10">
+          <div className="mb-8 border-b border-gray-200 dark:border-gray-800 pb-5">
+            <div className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-1">
+              {isEditMode
+                ? `Task Identity: TASK-${taskId?.slice(0, 4).toUpperCase()}`
+                : "New Work Entry"}
             </div>
-          )}
-          <div>
-            <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-              Summary <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={title}
-              onChange={handleInputChange}
-              placeholder="What needs to be done?"
-              className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all shadow-inner"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-              Description <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              name="description"
-              value={description}
-              onChange={handleInputChange}
-              placeholder="Provide a structural definition or task requirements description..."
-              rows={6}
-              className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm leading-relaxed placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all resize-y shadow-inner"
-              required
-            />
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+              {isEditMode ? "Edit Issue details" : "Create Issue"}
+            </h1>
           </div>
 
-          {isEditMode && (
-            <div className="border-t border-gray-200 dark:border-gray-800/80 pt-6 mt-8 space-y-4">
-              <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                Activity & Comments Feed
-              </label>
-
-              <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
-                {comments.map((comment) => (
-                  <div
-                    key={comment.id}
-                    className="bg-gray-50/60 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800/60 rounded-xl p-3 text-sm"
-                  >
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-semibold text-gray-800 dark:text-gray-200 text-xs">
-                        {comment.author}
-                      </span>
-                      <span className="text-[10px] text-gray-400 font-medium">
-                        {comment.createdAt
-                          ? new Date(comment.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              },
-                            )
-                          : ""}
-                      </span>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed">
-                      {comment.content}
-                    </p>
-                  </div>
-                ))}
-                {comments.length === 0 && (
-                  <p className="text-xs text-gray-400 italic">
-                    No comments posted yet.
-                  </p>
-                )}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="text-sm font-medium bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-3 rounded-xl border border-red-200 dark:border-red-900/50">
+                {error}
               </div>
-
-              <div className="flex gap-3 items-start pt-2">
-                <div className="w-7 h-7 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm shadow-orange-500/20">
-                  ME
-                </div>
-                <div className="w-full flex gap-2">
-                  <input
-                    type="text"
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Add an update comment to this issue..."
-                    className="w-full text-xs px-4 py-2.5 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-900 dark:text-white"
-                  />
-                  <button
-                    onClick={handleAddComment}
-                    className="px-3 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-xl transition-all"
-                  >
-                    Comment
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            )}
             <div>
               <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                Status Stage <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="targetColumnId"
-                value={targetColumnId}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
-                required
-              >
-                <option value="" disabled>
-                  Select processing line...
-                </option>
-                <option value="57f0cca5-1d5f-4036-97c1-67567e83efd8">
-                  TO DO
-                </option>
-                <option value="d8f20403-1991-4fa9-bf2c-192cd03078e0">
-                  In Progress
-                </option>
-                <option value="37c5d34a-736e-4b76-ab25-826b438f8165">
-                  Done
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                Assignee
-              </label>
-              <select
-                name="assigneeId"
-                value={assigneeId}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
-              >
-                <option value="">Unassigned</option>
-                <option value="user-uuid-123">John Doe</option>
-                <option value="user-uuid-456">Jane Smith</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                Priority Ranking
-              </label>
-              <select
-                name="priority"
-                value={priority}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
-              >
-                <option value="LOW"> Low</option>
-                <option value="MEDIUM"> Medium</option>
-                <option value="HIGH"> High</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                Due Date Selection
+                Summary <span className="text-red-500">*</span>
               </label>
               <input
-                type="datetime-local"
-                name="dueDate"
-                value={dueDate}
+                type="text"
+                name="title"
+                value={title}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
+                placeholder="What needs to be done?"
+                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all shadow-inner"
+                required
               />
             </div>
-          </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                name="description"
+                value={description}
+                onChange={handleInputChange}
+                placeholder="Provide a structural definition or task requirements description..."
+                rows={6}
+                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm leading-relaxed placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all resize-y shadow-inner"
+                required
+              />
+            </div>
 
-          <div className="flex justify-end items-center gap-4 border-t border-gray-100 dark:border-gray-800 pt-6 mt-10">
-            <button
-              type="button"
-              onClick={() => navigate("/board")}
-              className="px-5 py-2.5 text-sm font-semibold text-gray-500 dark:text-gray-400 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/60 rounded-xl transition-all"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2.5 text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 active:bg-orange-700 rounded-xl transition-all shadow-md shadow-orange-500/10 disabled:opacity-50"
-              disabled={isSubmitting}
-            >
-              {isSubmitting
-                ? "Saving changes..."
-                : isEditMode
-                  ? "Update"
-                  : "Create"}
-            </button>
-          </div>
-        </form>
+            {isEditMode && (
+              <div className="border-t border-gray-200 dark:border-gray-800/80 pt-6 mt-8 space-y-4">
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                  Activity & Comments Feed
+                </label>
+
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                  {comments.map((comment) => (
+                    <div
+                      key={comment.id}
+                      className="bg-gray-50/60 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800/60 rounded-xl p-3 text-sm"
+                    >
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-semibold text-gray-800 dark:text-gray-200 text-xs">
+                          {comment.author}
+                        </span>
+                        <span className="text-[10px] text-gray-400 font-medium">
+                          {comment.createdAt
+                            ? new Date(comment.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                },
+                              )
+                            : ""}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed">
+                        {comment.content}
+                      </p>
+                    </div>
+                  ))}
+                  {comments.length === 0 && (
+                    <p className="text-xs text-gray-400 italic">
+                      No comments posted yet.
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex gap-3 items-start pt-2">
+                  <div className="w-7 h-7 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm shadow-orange-500/20">
+                    ME
+                  </div>
+                  <div className="w-full flex gap-2">
+                    <input
+                      type="text"
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Add an update comment to this issue..."
+                      className="w-full text-xs px-4 py-2.5 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-900 dark:text-white"
+                    />
+                    <button
+                      onClick={handleAddComment}
+                      className="px-3 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-bold rounded-xl transition-all"
+                    >
+                      Comment
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              <div>
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                  Status Stage <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="targetColumnId"
+                  value={targetColumnId}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
+                  required
+                >
+                  <option value="" disabled>
+                    Select processing line...
+                  </option>
+                  <option value="57f0cca5-1d5f-4036-97c1-67567e83efd8">
+                    TO DO
+                  </option>
+                  <option value="d8f20403-1991-4fa9-bf2c-192cd03078e0">
+                    In Progress
+                  </option>
+                  <option value="37c5d34a-736e-4b76-ab25-826b438f8165">
+                    Done
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                  Assignee
+                </label>
+                <Listbox value={selectedUser} onChange={setSelectedUser}>
+                  <div className="relative mt-2 ">
+                    <Listbox.Button className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-200 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/80  py-2 pl-3 pr-10 text-left shadow-sm">
+                      <div className="flex  items-center gap-2">
+                        <img
+                          src={profileImg}
+                          alt={selectedUser?.fullName}
+                          className="w-8 h-8 rounded-full"
+                        />
+
+                        <span>{selectedUser?.fullName}</span>
+                      </div>
+
+                      <ChevronUpDownIcon className="absolute right-2 top-3 h-5 w-5 text-gray-500" />
+                    </Listbox.Button>
+
+                    <Listbox.Options className="absolute z-10  mt-1 max-h-60 w-full overflow-auto bg-gray-200 rounded-lg dark:text-white dark:bg-gray-900 shadow-lg border">
+                      {users.map((user) => (
+                        <Listbox.Option
+                          key={user.id}
+                          value={user}
+                          className="cursor-pointer select-none px-3 py-2 dark:data-[focus]:bg-gray-800 data-[focus]:bg-white"
+                        >
+                          {({ selected }) => (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={imgProfile}
+                                  alt={user.fullName}
+                                  className="w-8 h-8 rounded-full"
+                                />
+
+                                <span>{user.fullName}</span>
+                              </div>
+
+                              {selected && (
+                                <CheckIcon className="h-5 w-5 text-indigo-600" />
+                              )}
+                            </div>
+                          )}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                  Priority Ranking
+                </label>
+                <select
+                  name="priority"
+                  value={priority}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
+                >
+                  <option value="LOW"> Low</option>
+                  <option value="MEDIUM"> Medium</option>
+                  <option value="HIGH"> High</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                  Due Date Selection
+                </label>
+                <input
+                  type="datetime-local"
+                  name="dueDate"
+                  value={dueDate}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end items-center gap-4 border-t border-gray-100 dark:border-gray-800 pt-6 mt-10">
+              <button
+                type="button"
+                onClick={() => navigate("/boards")}
+                className="px-5 py-2.5 text-sm font-semibold text-gray-500 dark:text-gray-400 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800/60 rounded-xl transition-all"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2.5 text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 active:bg-orange-700 rounded-xl transition-all shadow-md shadow-orange-500/10 disabled:opacity-50"
+                disabled={isSubmitting}
+              >
+                {isSubmitting
+                  ? "Saving changes..."
+                  : isEditMode
+                    ? "Update"
+                    : "Create"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };

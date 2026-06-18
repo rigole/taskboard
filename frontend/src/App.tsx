@@ -36,7 +36,7 @@ function App() {
            } />
 
            <Route
-            path="task/new"
+            path="/task/new"
             element={
               <ProtectedRoute>
                 <TaskFormPage/>

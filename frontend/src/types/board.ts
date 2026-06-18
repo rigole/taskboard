@@ -12,7 +12,7 @@ export interface BoardResponse {
   description: string;
   createdAt: Date;
   updatedAt: Date;
-  columns: ColumnResponse[];
+  columns?: ColumnResponse[];
 }
 
 export interface BoardModalProps {

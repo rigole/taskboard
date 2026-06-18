@@ -3,6 +3,7 @@ package com.taskboardbackend.taskboardbackend.controller;
 
 import com.taskboardbackend.taskboardbackend.dto.request.TaskRequest;
 import com.taskboardbackend.taskboardbackend.dto.response.TaskResponse;
+import com.taskboardbackend.taskboardbackend.dto.response.UserResponse;
 import com.taskboardbackend.taskboardbackend.model.User;
 import com.taskboardbackend.taskboardbackend.service.TaskService;
 import jakarta.validation.Valid;
@@ -29,6 +30,11 @@ public class TaskController {
     @GetMapping("/{creator}")
     public ResponseEntity<List<TaskResponse>> getTasksByCreator(@PathVariable String creator) {
         return ResponseEntity.ok(taskService.getTasksByCreator(creator));
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        return ResponseEntity.ok(taskService.getAllUsers());
     }
 
     @PostMapping

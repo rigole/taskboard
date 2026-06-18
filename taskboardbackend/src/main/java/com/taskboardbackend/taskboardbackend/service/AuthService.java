@@ -3,6 +3,9 @@ package com.taskboardbackend.taskboardbackend.service;
 import com.taskboardbackend.taskboardbackend.dto.request.LoginRequest;
 import com.taskboardbackend.taskboardbackend.dto.request.RegisterRequest;
 import com.taskboardbackend.taskboardbackend.dto.response.AuthResponse;
+import com.taskboardbackend.taskboardbackend.dto.response.BoardResponse;
+import com.taskboardbackend.taskboardbackend.dto.response.UserResponse;
+import com.taskboardbackend.taskboardbackend.model.Board;
 import com.taskboardbackend.taskboardbackend.model.User;
 import com.taskboardbackend.taskboardbackend.repository.UserRepository;
 import com.taskboardbackend.taskboardbackend.security.JwtService;
@@ -12,6 +15,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

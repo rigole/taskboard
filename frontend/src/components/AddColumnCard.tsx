@@ -2,13 +2,11 @@ interface AddColumnCardProps {
   onAddColumn: () => void;
 }
 
-export const AddColumnCard = ({
-  onAddColumn,
-}: AddColumnCardProps) => {
+export const AddColumnCard = ({ onAddColumn }: AddColumnCardProps) => {
   return (
-    <button
-      onClick={onAddColumn}
-      className="
+      <button
+        onClick={onAddColumn}
+        className="
         w-80
         h-40
         flex-shrink-0
@@ -25,8 +23,8 @@ export const AddColumnCard = ({
         dark:hover:bg-gray-800
         transition
       "
-    >
-      + Add Column
-    </button>
+      >
+        + Add Column
+      </button>
   );
 };

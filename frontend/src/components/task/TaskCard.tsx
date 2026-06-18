@@ -76,71 +76,65 @@ export const TaskCard = ({ task }: TaskCardProps) => {
             {task.title}
           </h3>
         </div>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-          className="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
-          <Menu as="div" className="relative">
-            <MenuButton
-              onClick={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <EllipsisVerticalIcon className="w-5 h-5 text-gray-500" />
-            </MenuButton>
 
-            <MenuItems
-              anchor="bottom end"
-              className="z-50 mt-2 w-48 origin-top-right rounded-xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black/5 dark:ring-white/10 focus:outline-none"
-            >
-              <div className="p-1">
-                <MenuItem>
-                  {({ focus }) => (
-                    <button
-                      onClick={() => setOpen(true)}
-                      className={`${
-                        focus ? "bg-gray-100 dark:bg-gray-700" : ""
-                      } flex w-full text-gray-900 dark:text-white items-center gap-3 rounded-lg px-3 py-2 text-sm`}
-                    >
-                      <EyeIcon className="w-5 h-5" />
-                      View Details
-                    </button>
-                  )}
-                </MenuItem>
+        <Menu as="div" className="relative">
+          <MenuButton
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="rounded-md p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <EllipsisVerticalIcon className="w-5 h-5 text-gray-500" />
+          </MenuButton>
 
-                <MenuItem>
-                  {({ focus }) => (
-                    <button
-                      onClick={() => navigate(`/tasks/${task.id}/edit`)}
-                      className={`${
-                        focus ? "bg-gray-100 dark:bg-gray-700" : ""
-                      } flex w-full text-gray-900 dark:text-white items-center gap-3 rounded-lg px-3 py-2 text-sm`}
-                    >
-                      <PencilSquareIcon className="w-5 h-5" />
-                      Edit Task
-                    </button>
-                  )}
-                </MenuItem>
+          <MenuItems
+            anchor="bottom end"
+            className="z-50 mt-2 w-48 origin-top-right rounded-xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black/5 dark:ring-white/10 focus:outline-none"
+          >
+            <div className="p-1">
+              <MenuItem>
+                {({ focus }) => (
+                  <button
+                    onClick={() => setOpen(true)}
+                    className={`${
+                      focus ? "bg-gray-100 dark:bg-gray-700" : ""
+                    } flex w-full text-gray-900 dark:text-white items-center gap-3 rounded-lg px-3 py-2 text-sm`}
+                  >
+                    <EyeIcon className="w-5 h-5" />
+                    View Details
+                  </button>
+                )}
+              </MenuItem>
 
-                <MenuItem>
-                  {({ focus }) => (
-                    <button
-                      onClick={() => console.log("Delete", task.id)}
-                      className={`${
-                        focus ? "bg-red-100 dark:bg-red-900/30" : ""
-                      } flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-600 dark:text-red-400`}
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                      Delete Task
-                    </button>
-                  )}
-                </MenuItem>
-              </div>
-            </MenuItems>
-          </Menu>
-        </button>
+              <MenuItem>
+                {({ focus }) => (
+                  <button
+                    onClick={() => navigate(`/tasks/${task.id}/edit`)}
+                    className={`${
+                      focus ? "bg-gray-100 dark:bg-gray-700" : ""
+                    } flex w-full text-gray-900 dark:text-white items-center gap-3 rounded-lg px-3 py-2 text-sm`}
+                  >
+                    <PencilSquareIcon className="w-5 h-5" />
+                    Edit Task
+                  </button>
+                )}
+              </MenuItem>
+
+              <MenuItem>
+                {({ focus }) => (
+                  <button
+                    onClick={() => console.log("Delete", task.id)}
+                    className={`${
+                      focus ? "bg-red-100 dark:bg-red-900/30" : ""
+                    } flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-red-600 dark:text-red-400`}
+                  >
+                    <TrashIcon className="w-5 h-5" />
+                    Delete Task
+                  </button>
+                )}
+              </MenuItem>
+            </div>
+          </MenuItems>
+        </Menu>
       </div>
       <div
         onClick={() => {

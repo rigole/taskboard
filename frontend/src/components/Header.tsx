@@ -10,11 +10,13 @@ import {
 import BoardModal from "./BoardModal";
 import type { BoardResponse } from "../types/board";
 import { useBoardState } from "../store/boardStore";
+import { useNavigate } from "react-router-dom";
 interface HeaderProps {
   userName: string | null;
 }
 
 export const Header = ({ userName }: HeaderProps) => {
+  const navigate = useNavigate();
   const { darkMode, toggleTheme } = useThemeStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,6 +24,12 @@ export const Header = ({ userName }: HeaderProps) => {
   const [selectedBoard, setSelectedBoard] = useState<BoardResponse | null>(
     null,
   );
+
+  const openTaskForm = () => {
+    navigate("/task/new");
+    console.log("Clicked for taks");
+  };
+
   return (
     <div className="w-full">
       <header className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-6 py-4 flex items-center justify-between w-full">
@@ -63,7 +71,12 @@ export const Header = ({ userName }: HeaderProps) => {
           </button>
 
           {currentBoard && (
-            <button className="bg-indigo-600 text-white px-5 py-3 rounded-xl flex items-center gap-2 hover:bg-indigo-500 transition shadow-sm font-medium">
+            <button
+              onClick={openTaskForm}
+              className="bg-indigo-600 text-white
+             px-5 py-3 rounded-xl flex items-center gap-2 cursor-pointer
+             hover:bg-indigo-500 transition shadow-sm font-medium"
+            >
               Add Task
             </button>
           )}
@@ -95,7 +108,11 @@ export const Header = ({ userName }: HeaderProps) => {
             Add Board
           </button>
           {currentBoard && (
-            <button className="bg-indigo-600 hover:bg-indigo-500 text-center px-5 py-3 rounded-lg text-white">
+            <button
+              onClick={openTaskForm}
+              className="bg-indigo-600 hover:bg-indigo-500 
+            text-center px-5 py-3 rounded-lg text-white"
+            >
               Add Task
             </button>
           )}
