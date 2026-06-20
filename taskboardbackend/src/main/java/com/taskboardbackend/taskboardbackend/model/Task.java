@@ -26,7 +26,7 @@ public class Task {
     private String description;
 
 
-    @Column(nullable = false)
+
     private Integer position;
 
     @Column(nullable = false)

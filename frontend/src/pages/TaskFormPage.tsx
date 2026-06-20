@@ -1,14 +1,17 @@
-import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import type { Comment, TaskRequest } from "../types/comment";
+import type { Comment } from "../types/comment";
+import type { TaskRequest } from "../types/task";
 import { useTaskState } from "../store/taskStore";
 import profileImg from "../assets/profile.png";
 import { Listbox } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/outline";
-import type { User } from "../types/auth";
 import { Header } from "../components/Header";
 import { useBoardState } from "../store/boardStore";
 import { useColumnState } from "../store/columnStore";
+import { useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export const TaskFormPage = () => {
   const navigate = useNavigate();
@@ -20,27 +23,25 @@ export const TaskFormPage = () => {
   const columns = useColumnState((state) => state.columns);
   const getBoardColumns = useColumnState((state) => state.getBoardColumns);
   const getUsersForTask = useTaskState((state) => state.getUsersForTask);
+  const taskStateError = useTaskState((state) => state.error);
+  const addTask = useTaskState((state) => state.addTask);
   const users = useTaskState((state) => state.users);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const storedImage = localStorage.getItem("image");
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TaskRequest>();
+
   const imgProfile: string | undefined =
     storedImage && storedImage !== "null" && storedImage !== "undefined"
       ? storedImage
       : undefined;
 
-  const [formData, setFormData] = useState<TaskRequest>({
-    title: "",
-    description: "",
-    priority: "MEDIUM",
-    dueDate: "",
-    targetColumnId: "",
-    assigneeId: "",
-  });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
-  const [error, setError] = useState<string | null>(null);
 
   const loadUsers = async () => {
     try {
@@ -48,6 +49,29 @@ export const TaskFormPage = () => {
     } catch (error) {
       console.error("Failed to load boards:", error);
     }
+  };
+
+  const onSubmit = async (task: TaskRequest) => {
+    // e.preventDefault();
+    console.log("here are the data submited", task);
+    setIsSubmitting(true);
+    
+    try {
+      const data = {
+        ...task,
+        dueDate: `${task.dueDate}:00`
+      };
+      await addTask(data);
+      if (!taskStateError) {
+        toast.success("task Added successfully.");
+      } else {
+        toast.error(taskStateError);
+      }
+    } catch (error) {
+      toast.error(taskStateError);
+      console.error("task creation failed:", error);
+    }
+
   };
   const loadColumns = async () => {
     try {
@@ -89,28 +113,21 @@ export const TaskFormPage = () => {
         },
       ];
 
-      setFormData(simulatedFetchedTask);
+      //setFormData(simulatedFetchedTask);
       setComments(simulatedComments);
     } else {
-      console.log("board", currentBoard);
-      const queryParams = new URLSearchParams(location.search);
-      const preselectedColumn = queryParams.get("columnId");
+      //const queryParams = new URLSearchParams(location.search);
+      //  const preselectedColumn = queryParams.get("columnId");
+      /*
       if (preselectedColumn) {
+
         setFormData((prev) => ({ ...prev, targetColumnId: preselectedColumn }));
       }
+        */
     }
     loadUsers();
     loadColumns();
-  }, [taskId, isEditMode,currentBoard, location.search]);
-
-  const { title, description, priority, dueDate, targetColumnId } = formData;
-
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, [taskId, isEditMode, currentBoard, location.search]);
 
   const handleAddComment = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -129,52 +146,6 @@ export const TaskFormPage = () => {
     setNewComment("");
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (!title.trim() || !description.trim() || !targetColumnId) {
-      setError(
-        "Summary, Description, and Destination Stage are mandatory fields.",
-      );
-      return;
-    }
-
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      const formattedDueDate = dueDate
-        ? new Date(dueDate).toISOString().slice(0, 19)
-        : "";
-
-      const finalPayload = {
-        ...formData,
-        dueDate: formattedDueDate,
-      };
-
-      if (isEditMode) {
-        // await useBoardStore.getState().updateTask(taskId, finalPayload);
-        console.log(
-          "Updating existing task via PUT/PATCH:",
-          taskId,
-          finalPayload,
-        );
-      } else {
-        // await useBoardStore.getState().createTask(finalPayload);
-        console.log("Creating new task via POST:", finalPayload);
-      }
-
-      navigate("/board");
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.message ||
-          "An operational error occurred while saving your task.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <>
       <Header userName={userName ?? ""} />
@@ -191,39 +162,50 @@ export const TaskFormPage = () => {
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="text-sm font-medium bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-3 rounded-xl border border-red-200 dark:border-red-900/50">
-                {error}
-              </div>
-            )}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
                 Summary <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                name="title"
-                value={title}
-                onChange={handleInputChange}
+                {...register("title", {
+                  required: "title is required",
+                })}
                 placeholder="What needs to be done?"
-                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all shadow-inner"
-                required
+                className={`w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border 
+                 dark:border-gray-800 rounded-xl 
+                text-gray-900 dark:text-white font-medium 
+                placeholder-gray-400 focus:outline-none
+                 focus:ring-2 focus:ring-orange-500/80 
+                 transition-all shadow-inner ${errors.title ? "border-red-500 bg-red-50" : "border-gray-200"}`}
               />
+              {errors.title && (
+                <span className="text-red-500 text-sm mb-4 block">
+                  {errors.title.message}
+                </span>
+              )}
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
                 Description <span className="text-red-500">*</span>
               </label>
               <textarea
-                name="description"
-                value={description}
-                onChange={handleInputChange}
+                {...register("description", {
+                  required: "description is required",
+                })}
                 placeholder="Provide a structural definition or task requirements description..."
                 rows={6}
-                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm leading-relaxed placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all resize-y shadow-inner"
-                required
+                className={`w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border dark:border-gray-800 rounded-xl text-gray-900 dark:text-white
+                   text-sm leading-relaxed placeholder-gray-400 
+                   focus:outline-none focus:ring-2 focus:ring-orange-500/80 
+                   transition-all resize-y shadow-inner ${errors.description ? "border-red-500 bg-red-50" : "border-gray-200"}`}
               />
+              {errors.description && (
+                <span className="text-red-500 text-sm mb-4 block">
+                  {errors.description.message}
+                </span>
+              )}
             </div>
 
             {isEditMode && (
@@ -293,141 +275,132 @@ export const TaskFormPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
               <div>
                 <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Board
+                  Column<span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="priority"
-                  value={currentBoard?.name}
-                  onChange={handleInputChange}
-                  disabled
-                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
-                >
-                  <option value="LOW"> {currentBoard?.name}</option>
-                  <option value="MEDIUM"> {currentBoard?.name}</option>
-                  <option value="HIGH"> {currentBoard?.name}</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Column
-                </label>
-                <select
-                  name="priority"
-                  value={priority}
-                  onChange={handleInputChange}
+                  {...register("column", {
+                    required: "column is required",
+                  })}
                   className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
                 >
                   {columns?.map((column) => (
-                    <option value={column.name}> {column.name}</option>
+                    <option key={column.id} value={column.name}>
+                      {" "}
+                      {column.name}
+                    </option>
                   ))}
                 </select>
+
+                {errors.column && (
+                  <span className="text-red-500 text-sm mb-4 block">
+                    {errors.column.message}
+                  </span>
+                )}
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Status Stage <span className="text-red-500">*</span>
+                  Priority Ranking <span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="targetColumnId"
-                  value={targetColumnId}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
-                  required
-                >
-                  <option value="" disabled>
-                    Select processing line...
-                  </option>
-                  <option value="57f0cca5-1d5f-4036-97c1-67567e83efd8">
-                    TO DO
-                  </option>
-                  <option value="d8f20403-1991-4fa9-bf2c-192cd03078e0">
-                    In Progress
-                  </option>
-                  <option value="37c5d34a-736e-4b76-ab25-826b438f8165">
-                    Done
-                  </option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Assignee
-                </label>
-                <Listbox value={selectedUser} onChange={setSelectedUser}>
-                  <div className="relative mt-2 ">
-                    <Listbox.Button className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-200 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/80  py-2 pl-3 pr-10 text-left shadow-sm">
-                      <div className="flex  items-center gap-2">
-                        <img
-                          src={profileImg}
-                          alt={selectedUser?.fullName}
-                          className="w-8 h-8 rounded-full"
-                        />
-
-                        <span>{selectedUser?.fullName}</span>
-                      </div>
-
-                      <ChevronUpDownIcon className="absolute right-2 top-3 h-5 w-5 text-gray-500" />
-                    </Listbox.Button>
-
-                    <Listbox.Options className="absolute z-10  mt-1 max-h-60 w-full overflow-auto bg-gray-200 rounded-lg dark:text-white dark:bg-gray-900 shadow-lg border">
-                      {users.map((user) => (
-                        <Listbox.Option
-                          key={user.id}
-                          value={user}
-                          className="cursor-pointer select-none px-3 py-2 dark:data-[focus]:bg-gray-800 data-[focus]:bg-white"
-                        >
-                          {({ selected }) => (
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <img
-                                  src={imgProfile}
-                                  alt={user.fullName}
-                                  className="w-8 h-8 rounded-full"
-                                />
-
-                                <span>{user.fullName}</span>
-                              </div>
-
-                              {selected && (
-                                <CheckIcon className="h-5 w-5 text-indigo-600" />
-                              )}
-                            </div>
-                          )}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </div>
-                </Listbox>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Priority Ranking
-                </label>
-                <select
-                  name="priority"
-                  value={priority}
-                  onChange={handleInputChange}
+                  {...register("priority", {
+                    required: "Priority Level  is required",
+                  })}
                   className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
                 >
                   <option value="LOW"> Low</option>
                   <option value="MEDIUM"> Medium</option>
                   <option value="HIGH"> High</option>
                 </select>
+                {errors.priority && (
+                  <span className="text-red-500 text-sm mb-4 block">
+                    {errors.priority.message}
+                  </span>
+                )}
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Due Date Selection
+                  Assignee <span className="text-red-500">*</span>
+                </label>
+                <Controller
+                  name="assignee"
+                  control={control}
+                  rules={{
+                    required: "Assignee is required",
+                  }}
+                  render={({ field }) => (
+                    <Listbox value={field.value} onChange={field.onChange}>
+                      <div className="relative mt-2 ">
+                        <Listbox.Button className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-200 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/80  py-2 pl-3 pr-10 text-left shadow-sm">
+                          <div className="flex  items-center gap-2">
+                            <img
+                              src={profileImg}
+                              className="w-8 h-8 rounded-full"
+                            />
+
+                            <span></span>
+                          </div>
+
+                          <ChevronUpDownIcon className="absolute right-2 top-3 h-5 w-5 text-gray-500" />
+                        </Listbox.Button>
+
+                        <Listbox.Options className="absolute z-10  mt-1 max-h-60 w-full overflow-auto bg-gray-200 rounded-lg dark:text-white dark:bg-gray-900 shadow-lg border">
+                          {users.map((user) => (
+                            <Listbox.Option
+                              key={user.id}
+                              value={user.fullName}
+                              className="cursor-pointer select-none px-3 py-2 dark:data-[focus]:bg-gray-800 data-[focus]:bg-white"
+                            >
+                              {({ selected }) => (
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <img
+                                      src={profileImg}
+                                      alt={user.fullName}
+                                      className="w-8 h-8 rounded-full"
+                                    />
+
+                                    <span>{user.fullName}</span>
+                                  </div>
+
+                                  {selected && (
+                                    <CheckIcon className="h-5 w-5 text-indigo-600" />
+                                  )}
+                                </div>
+                              )}
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </div>
+                    </Listbox>
+                  )}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                  Due Date Selection <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="datetime-local"
-                  name="dueDate"
-                  value={dueDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
+                  {...register("dueDate", {
+                    required: "Deadline is required",
+                  })}
+                  className={`w-full px-4 py-3 
+                  bg-gray-50/50 dark:bg-gray-800/40 border
+                   dark:border-gray-800
+                    rounded-xl text-gray-900 
+                   dark:text-white 
+                   text-sm font-semibold focus:outline-none
+                    focus:ring-2 
+                    focus:ring-orange-500/80 transition-all  ${errors.dueDate ? "border-red-500 bg-red-50" : "border-gray-200"}`}
                 />
+                {errors.dueDate && (
+                  <span className="text-red-500 text-sm mb-4 block">
+                    {errors.dueDate.message}
+                  </span>
+                )}
               </div>
             </div>
 
