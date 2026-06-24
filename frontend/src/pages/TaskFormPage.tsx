@@ -23,13 +23,16 @@ export const TaskFormPage = () => {
   const columns = useColumnState((state) => state.columns);
   const getBoardColumns = useColumnState((state) => state.getBoardColumns);
   const getUsersForTask = useTaskState((state) => state.getUsersForTask);
+  const getTask = useTaskState((state) => state.getTask);
   const taskStateError = useTaskState((state) => state.error);
   const addTask = useTaskState((state) => state.addTask);
+  const updateTask = useTaskState((state) => state.updateTask);
   const users = useTaskState((state) => state.users);
   const storedImage = localStorage.getItem("image");
   const {
     register,
     control,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<TaskRequest>();
@@ -43,6 +46,10 @@ export const TaskFormPage = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
 
+  const openBoardDetail = (boardId: string) => {
+    navigate(`/boards/${boardId}`);
+  };
+
   const loadUsers = async () => {
     try {
       await getUsersForTask();
@@ -52,26 +59,45 @@ export const TaskFormPage = () => {
   };
 
   const onSubmit = async (task: TaskRequest) => {
-    // e.preventDefault();
-    console.log("here are the data submited", task);
     setIsSubmitting(true);
-    
-    try {
-      const data = {
-        ...task,
-        dueDate: `${task.dueDate}:00`
-      };
-      await addTask(data);
-      if (!taskStateError) {
-        toast.success("task Added successfully.");
-      } else {
+    if (isEditMode) {
+      try {
+        if (taskId) {
+          updateTask(taskId, task);
+          if (!taskStateError) {
+            toast.success("task Updated successfully.");
+            if (currentBoard) {
+              openBoardDetail(currentBoard?.id);
+            }
+          } else {
+            toast.error(taskStateError);
+          }
+        }
+      } catch (error) {
         toast.error(taskStateError);
+        console.error("task edit failed:", error);
       }
-    } catch (error) {
-      toast.error(taskStateError);
-      console.error("task creation failed:", error);
-    }
+    } else {
+      try {
+        const data = {
+          ...task,
+          dueDate: `${task.dueDate}:00`,
+        };
+        await addTask(data);
 
+        if (!taskStateError) {
+          toast.success("task Added successfully.");
+          if (currentBoard) {
+            openBoardDetail(currentBoard?.id);
+          }
+        } else {
+          toast.error(taskStateError);
+        }
+      } catch (error) {
+        toast.error(taskStateError);
+        console.error("task creation failed:", error);
+      }
+    }
   };
   const loadColumns = async () => {
     try {
@@ -82,8 +108,30 @@ export const TaskFormPage = () => {
       console.error("Failed to loads columns", error);
     }
   };
+  const getTaskById = async () => {
+    try {
+      if (taskId) {
+        const task = await getTask(taskId);
+        console.log(task);
+        reset({
+          title: task?.title,
+          description: task?.description,
+          priority: task?.priority,
+          dueDate: task?.dueDate,
+          assignee: task?.assignee,
+          column: task?.column,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to loads task", error);
+    }
+  };
   useEffect(() => {
+    loadUsers();
+    loadColumns();
+
     if (isEditMode) {
+      getTaskById();
       const simulatedFetchedTask = {
         title: "Task 1",
         description: "this is the first task ever",
@@ -112,21 +160,7 @@ export const TaskFormPage = () => {
           updatedAt: new Date(),
         },
       ];
-
-      //setFormData(simulatedFetchedTask);
-      setComments(simulatedComments);
-    } else {
-      //const queryParams = new URLSearchParams(location.search);
-      //  const preselectedColumn = queryParams.get("columnId");
-      /*
-      if (preselectedColumn) {
-
-        setFormData((prev) => ({ ...prev, targetColumnId: preselectedColumn }));
-      }
-        */
     }
-    loadUsers();
-    loadColumns();
   }, [taskId, isEditMode, currentBoard, location.search]);
 
   const handleAddComment = (e: React.MouseEvent) => {
@@ -284,7 +318,7 @@ export const TaskFormPage = () => {
                   className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
                 >
                   {columns?.map((column) => (
-                    <option key={column.id} value={column.name}>
+                    <option key={column.id} value={column.id}>
                       {" "}
                       {column.name}
                     </option>
@@ -308,9 +342,9 @@ export const TaskFormPage = () => {
                   })}
                   className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
                 >
-                  <option value="LOW"> Low</option>
-                  <option value="MEDIUM"> Medium</option>
-                  <option value="HIGH"> High</option>
+                  <option value="low"> Low</option>
+                  <option value="medium"> Medium</option>
+                  <option value="high"> High</option>
                 </select>
                 {errors.priority && (
                   <span className="text-red-500 text-sm mb-4 block">
@@ -339,7 +373,7 @@ export const TaskFormPage = () => {
                               className="w-8 h-8 rounded-full"
                             />
 
-                            <span></span>
+                            <span> {field.value || "Select an assignee"}</span>
                           </div>
 
                           <ChevronUpDownIcon className="absolute right-2 top-3 h-5 w-5 text-gray-500" />

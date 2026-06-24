@@ -22,14 +22,22 @@ import java.util.UUID;
 public class TaskController {
     private final TaskService taskService;
 
-    @GetMapping("/{assignee}")
+    @GetMapping("/assignee/{assignee}")
     public ResponseEntity<List<TaskResponse>> getTasksByAssignee(@PathVariable String assignee) {
         return ResponseEntity.ok(taskService.getTasksByAssignee(assignee));
     }
 
-    @GetMapping("/{creator}")
+    @GetMapping("/creator/{creator}")
     public ResponseEntity<List<TaskResponse>> getTasksByCreator(@PathVariable String creator) {
         return ResponseEntity.ok(taskService.getTasksByCreator(creator));
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskResponse> getTask(
+            @Valid @PathVariable UUID id,
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(taskService.getTaskById(id, user));
     }
 
     @GetMapping("/users")

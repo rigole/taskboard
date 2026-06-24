@@ -29,5 +29,5 @@ public class TaskRequest {
 
     private Integer position;
     private LocalDateTime updatedAt;
-    private String column;
+    private UUID column;
 }

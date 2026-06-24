@@ -15,6 +15,11 @@ const updateTask = async (
   return response.data;
 };
 
+const getTask = async (taskId: string): Promise<TaskResponse> => {
+  const response = await api.get(`/tasks/${taskId}`);
+  return response.data;
+};
+
 const getUsersForTask = async (): Promise<User[]> => {
   const response = await api.get("/tasks/users");
   return response.data;
@@ -23,5 +28,6 @@ const getUsersForTask = async (): Promise<User[]> => {
 export const taskService = {
   createTask,
   updateTask,
+  getTask,
   getUsersForTask,
 };
