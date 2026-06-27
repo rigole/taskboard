@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import type { CommentResponse } from "../types/comment";
 import type { TaskRequest } from "../types/task";
 import { useTaskState } from "../store/taskStore";
 import profileImg from "../assets/profile.png";
