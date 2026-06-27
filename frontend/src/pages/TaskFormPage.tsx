@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import type { CommentRequest, CommentResponse } from "../types/comment";
+import type { CommentResponse } from "../types/comment";
 import type { TaskRequest } from "../types/task";
 import { useTaskState } from "../store/taskStore";
 import profileImg from "../assets/profile.png";
@@ -28,7 +28,6 @@ export const TaskFormPage = () => {
   const addTask = useTaskState((state) => state.addTask);
   const updateTask = useTaskState((state) => state.updateTask);
   const users = useTaskState((state) => state.users);
-  const storedImage = localStorage.getItem("image");
   const {
     register,
     control,
@@ -37,13 +36,10 @@ export const TaskFormPage = () => {
     formState: { errors },
   } = useForm<TaskRequest>();
 
-  const imgProfile: string | undefined =
-    storedImage && storedImage !== "null" && storedImage !== "undefined"
-      ? storedImage
-      : undefined;
+     
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [comments, setComments] = useState<CommentResponse[]>([]);
+ // const [comments, setComments] = useState<CommentResponse[]>([]);
   const [newComment, setNewComment] = useState("");
 
   const openBoardDetail = (boardId: string) => {
@@ -138,6 +134,7 @@ export const TaskFormPage = () => {
   const handleAddComment = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
+    
     /*
     const freshlyCreatedComment: Comment = {
       id: Math.random().toString(),
@@ -222,38 +219,6 @@ export const TaskFormPage = () => {
                 </label>
 
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
-                  {comments.map((comment) => (
-                    <div
-                      key={comment.id}
-                      className="bg-gray-50/60 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800/60 rounded-xl p-3 text-sm"
-                    >
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="font-semibold text-gray-800 dark:text-gray-200 text-xs">
-                          {comment.author}
-                        </span>
-                        <span className="text-[10px] text-gray-400 font-medium">
-                          {comment.createdAt
-                            ? new Date(comment.createdAt).toLocaleDateString(
-                                "en-US",
-                                {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                },
-                              )
-                            : ""}
-                        </span>
-                      </div>
-                      <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed">
-                        {comment.content}
-                      </p>
-                    </div>
-                  ))}
-                  {comments.length === 0 && (
-                    <p className="text-xs text-gray-400 italic">
-                      No comments posted yet.
-                    </p>
-                  )}
                 </div>
 
                 <div className="flex gap-3 items-start pt-2">
