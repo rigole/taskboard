@@ -90,4 +90,9 @@ describe("create Column", () => {
     const result = await columnService.addColumn(mockedColumnsRequest);
     expect(result).toEqual(mockColumnResponse);
   });
+
+  it("throws when the API call fails", async () => {
+    localStorage.setItem("token", "mock-token");
+    mockedApi.get.mockRejectedValueOnce(new Error("Network error"));
+  });
 });
