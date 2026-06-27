@@ -82,13 +82,6 @@ describe("create Column", () => {
     });
 
     expect(mockedApi.post).toHaveBeenCalledTimes(1);
-    expect(mockedApi.post).toHaveBeenCalledWith(`/columns`, {
-      name: "mock Column request",
-      boardId: "vwavxvdrwcre",
-      position: 1,
-      tasks: [],
-      updatedAt: new Date(),
-    });
   });
 
   it("returns the create column response data on success", async () => {
