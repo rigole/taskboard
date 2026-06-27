@@ -169,7 +169,7 @@ export const TaskCard = ({ task }: TaskCardProps) => {
       <TaskDrawer open={open} onClose={() => setOpen(false)}>
         <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-4 mb-6">
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide">
-            <span>📋 Tasks</span>
+            <span> Tasks</span>
             <span className="text-gray-300 dark:text-gray-700">/</span>
             <span className="font-mono bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded text-xs text-orange-600 dark:text-orange-400">
               TASK-{task.id?.slice(0, 4).toUpperCase()}

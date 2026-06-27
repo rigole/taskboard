@@ -18,7 +18,7 @@ public class TaskResponse {
     private String createdBy;
     private LocalDateTime dueDate;
     private Integer position;
-    private String column;
+    private UUID column;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

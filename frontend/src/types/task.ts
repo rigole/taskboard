@@ -4,7 +4,7 @@ export interface TaskRequest {
   column: string;
   position: number;
   priority?: string;
-  dueDate?: Date;
+  dueDate: Date | string;
   createdBy: string;
   assignee?: string;
 }
@@ -16,7 +16,7 @@ export interface TaskResponse {
   column: string;
   position: number;
   priority?: string;
-  dueDate?: Date;
+  dueDate: Date;
   assignee?: string;
   createdBy: string;
   createdAt: Date;

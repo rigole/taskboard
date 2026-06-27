@@ -1,12 +1,17 @@
-import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import type { Comment, TaskRequest } from "../types/comment";
+import type { CommentRequest, CommentResponse } from "../types/comment";
+import type { TaskRequest } from "../types/task";
 import { useTaskState } from "../store/taskStore";
 import profileImg from "../assets/profile.png";
 import { Listbox } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/outline";
-import type { User } from "../types/auth";
 import { Header } from "../components/Header";
+import { useBoardState } from "../store/boardStore";
+import { useColumnState } from "../store/columnStore";
+import { useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
+import toast from "react-hot-toast";
 
 export const TaskFormPage = () => {
   const navigate = useNavigate();
@@ -14,28 +19,36 @@ export const TaskFormPage = () => {
   const location = useLocation();
   const isEditMode = !!taskId;
   const userName = localStorage.getItem("username");
+  const currentBoard = useBoardState((state) => state.board);
+  const columns = useColumnState((state) => state.columns);
+  const getBoardColumns = useColumnState((state) => state.getBoardColumns);
   const getUsersForTask = useTaskState((state) => state.getUsersForTask);
+  const getTask = useTaskState((state) => state.getTask);
+  const taskStateError = useTaskState((state) => state.error);
+  const addTask = useTaskState((state) => state.addTask);
+  const updateTask = useTaskState((state) => state.updateTask);
   const users = useTaskState((state) => state.users);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const storedImage = localStorage.getItem("image");
+  const {
+    register,
+    control,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TaskRequest>();
+
   const imgProfile: string | undefined =
     storedImage && storedImage !== "null" && storedImage !== "undefined"
       ? storedImage
       : undefined;
 
-  const [formData, setFormData] = useState<TaskRequest>({
-    title: "",
-    description: "",
-    priority: "MEDIUM",
-    dueDate: "",
-    targetColumnId: "",
-    assigneeId: "",
-  });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<CommentResponse[]>([]);
   const [newComment, setNewComment] = useState("");
-  const [error, setError] = useState<string | null>(null);
+
+  const openBoardDetail = (boardId: string) => {
+    navigate(`/boards/${boardId}`);
+  };
 
   const loadUsers = async () => {
     try {
@@ -44,64 +57,88 @@ export const TaskFormPage = () => {
       console.error("Failed to load boards:", error);
     }
   };
-  useEffect(() => {
-    console;
-    if (isEditMode) {
-      const simulatedFetchedTask = {
-        title: "Task 1",
-        description: "this is the first task ever",
-        priority: "HIGH" as const,
-        dueDate: "2026-06-30T12:00",
-        targetColumnId: "57f0cca5-1d5f-4036-97c1-67567e83efd8",
-        assigneeId: "user-uuid-123",
-      };
-      const simulatedComments: Comment[] = [
-        {
-          id: "c1",
-          author: "Jane Smith",
-          content:
-            "I've started investigating the backend logs for this issue.",
-          createdAt: new Date(),
-          taskId: taskId,
-          updatedAt: new Date(),
-        },
-        {
-          id: "c2",
-          author: "John Doe",
-          content:
-            "Awesome, let me know if you need any database script backups.",
-          createdAt: new Date(),
-          taskId: taskId,
-          updatedAt: new Date(),
-        },
-      ];
 
-      setFormData(simulatedFetchedTask);
-      setComments(simulatedComments);
+  const onSubmit = async (task: TaskRequest) => {
+    setIsSubmitting(true);
+    if (isEditMode) {
+      try {
+        if (taskId) {
+          updateTask(taskId, task);
+          if (!taskStateError) {
+            toast.success("task Updated successfully.");
+            if (currentBoard) {
+              openBoardDetail(currentBoard?.id);
+            }
+          } else {
+            toast.error(taskStateError);
+          }
+        }
+      } catch (error) {
+        toast.error(taskStateError);
+        console.error("task edit failed:", error);
+      }
     } else {
-      const queryParams = new URLSearchParams(location.search);
-      const preselectedColumn = queryParams.get("columnId");
-      if (preselectedColumn) {
-        setFormData((prev) => ({ ...prev, targetColumnId: preselectedColumn }));
+      try {
+        const data = {
+          ...task,
+          dueDate: `${task.dueDate}:00`,
+        };
+        await addTask(data);
+
+        if (!taskStateError) {
+          toast.success("task Added successfully.");
+          if (currentBoard) {
+            openBoardDetail(currentBoard?.id);
+          }
+        } else {
+          toast.error(taskStateError);
+        }
+      } catch (error) {
+        toast.error(taskStateError);
+        console.error("task creation failed:", error);
       }
     }
-    loadUsers();
-  }, [taskId, isEditMode, location.search]);
-
-  const { title, description, priority, dueDate, targetColumnId } =
-    formData;
-
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  const loadColumns = async () => {
+    try {
+      if (currentBoard) {
+        await getBoardColumns(currentBoard?.id);
+      }
+    } catch (error) {
+      console.error("Failed to loads columns", error);
+    }
+  };
+  const getTaskById = async () => {
+    try {
+      if (taskId) {
+        const task = await getTask(taskId);
+        console.log(task);
+        reset({
+          title: task?.title,
+          description: task?.description,
+          priority: task?.priority,
+          dueDate: task?.dueDate,
+          assignee: task?.assignee,
+          column: task?.column,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to loads task", error);
+    }
+  };
+  useEffect(() => {
+    loadUsers();
+    loadColumns();
+
+    if (isEditMode) {
+      getTaskById();
+    }
+  }, [taskId, isEditMode, currentBoard, location.search]);
 
   const handleAddComment = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-
+    /*
     const freshlyCreatedComment: Comment = {
       id: Math.random().toString(),
       author: "John Doe",
@@ -112,53 +149,8 @@ export const TaskFormPage = () => {
     };
 
     setComments((prev) => [...prev, freshlyCreatedComment]);
+    */
     setNewComment("");
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (!title.trim() || !description.trim() || !targetColumnId) {
-      setError(
-        "Summary, Description, and Destination Stage are mandatory fields.",
-      );
-      return;
-    }
-
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      const formattedDueDate = dueDate
-        ? new Date(dueDate).toISOString().slice(0, 19)
-        : "";
-
-      const finalPayload = {
-        ...formData,
-        dueDate: formattedDueDate,
-      };
-
-      if (isEditMode) {
-        // await useBoardStore.getState().updateTask(taskId, finalPayload);
-        console.log(
-          "Updating existing task via PUT/PATCH:",
-          taskId,
-          finalPayload,
-        );
-      } else {
-        // await useBoardStore.getState().createTask(finalPayload);
-        console.log("Creating new task via POST:", finalPayload);
-      }
-
-      navigate("/board");
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.message ||
-          "An operational error occurred while saving your task.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (
@@ -177,39 +169,50 @@ export const TaskFormPage = () => {
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="text-sm font-medium bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-3 rounded-xl border border-red-200 dark:border-red-900/50">
-                {error}
-              </div>
-            )}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
                 Summary <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                name="title"
-                value={title}
-                onChange={handleInputChange}
+                {...register("title", {
+                  required: "title is required",
+                })}
                 placeholder="What needs to be done?"
-                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white font-medium placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all shadow-inner"
-                required
+                className={`w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border 
+                 dark:border-gray-800 rounded-xl 
+                text-gray-900 dark:text-white font-medium 
+                placeholder-gray-400 focus:outline-none
+                 focus:ring-2 focus:ring-orange-500/80 
+                 transition-all shadow-inner ${errors.title ? "border-red-500 bg-red-50" : "border-gray-200"}`}
               />
+              {errors.title && (
+                <span className="text-red-500 text-sm mb-4 block">
+                  {errors.title.message}
+                </span>
+              )}
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
                 Description <span className="text-red-500">*</span>
               </label>
               <textarea
-                name="description"
-                value={description}
-                onChange={handleInputChange}
+                {...register("description", {
+                  required: "description is required",
+                })}
                 placeholder="Provide a structural definition or task requirements description..."
                 rows={6}
-                className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm leading-relaxed placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all resize-y shadow-inner"
-                required
+                className={`w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border dark:border-gray-800 rounded-xl text-gray-900 dark:text-white
+                   text-sm leading-relaxed placeholder-gray-400 
+                   focus:outline-none focus:ring-2 focus:ring-orange-500/80 
+                   transition-all resize-y shadow-inner ${errors.description ? "border-red-500 bg-red-50" : "border-gray-200"}`}
               />
+              {errors.description && (
+                <span className="text-red-500 text-sm mb-4 block">
+                  {errors.description.message}
+                </span>
+              )}
             </div>
 
             {isEditMode && (
@@ -279,108 +282,132 @@ export const TaskFormPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
               <div>
                 <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Status Stage <span className="text-red-500">*</span>
+                  Column<span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="targetColumnId"
-                  value={targetColumnId}
-                  onChange={handleInputChange}
+                  {...register("column", {
+                    required: "column is required",
+                  })}
                   className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
-                  required
                 >
-                  <option value="" disabled>
-                    Select processing line...
-                  </option>
-                  <option value="57f0cca5-1d5f-4036-97c1-67567e83efd8">
-                    TO DO
-                  </option>
-                  <option value="d8f20403-1991-4fa9-bf2c-192cd03078e0">
-                    In Progress
-                  </option>
-                  <option value="37c5d34a-736e-4b76-ab25-826b438f8165">
-                    Done
-                  </option>
+                  {columns?.map((column) => (
+                    <option key={column.id} value={column.id}>
+                      {" "}
+                      {column.name}
+                    </option>
+                  ))}
                 </select>
+
+                {errors.column && (
+                  <span className="text-red-500 text-sm mb-4 block">
+                    {errors.column.message}
+                  </span>
+                )}
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Assignee
+                  Priority Ranking <span className="text-red-500">*</span>
                 </label>
-                <Listbox value={selectedUser} onChange={setSelectedUser}>
-                  <div className="relative mt-2 ">
-                    <Listbox.Button className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-200 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/80  py-2 pl-3 pr-10 text-left shadow-sm">
-                      <div className="flex  items-center gap-2">
-                        <img
-                          src={profileImg}
-                          alt={selectedUser?.fullName}
-                          className="w-8 h-8 rounded-full"
-                        />
+                <select
+                  {...register("priority", {
+                    required: "Priority Level  is required",
+                  })}
+                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
+                >
+                  <option value="low"> Low</option>
+                  <option value="medium"> Medium</option>
+                  <option value="high"> High</option>
+                </select>
+                {errors.priority && (
+                  <span className="text-red-500 text-sm mb-4 block">
+                    {errors.priority.message}
+                  </span>
+                )}
+              </div>
 
-                        <span>{selectedUser?.fullName}</span>
-                      </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                  Assignee <span className="text-red-500">*</span>
+                </label>
+                <Controller
+                  name="assignee"
+                  control={control}
+                  rules={{
+                    required: "Assignee is required",
+                  }}
+                  render={({ field }) => (
+                    <Listbox value={field.value} onChange={field.onChange}>
+                      <div className="relative mt-2 ">
+                        <Listbox.Button className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-200 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/80  py-2 pl-3 pr-10 text-left shadow-sm">
+                          <div className="flex  items-center gap-2">
+                            <img
+                              src={profileImg}
+                              className="w-8 h-8 rounded-full"
+                            />
 
-                      <ChevronUpDownIcon className="absolute right-2 top-3 h-5 w-5 text-gray-500" />
-                    </Listbox.Button>
+                            <span> {field.value || "Select an assignee"}</span>
+                          </div>
 
-                    <Listbox.Options className="absolute z-10  mt-1 max-h-60 w-full overflow-auto bg-gray-200 rounded-lg dark:text-white dark:bg-gray-900 shadow-lg border">
-                      {users.map((user) => (
-                        <Listbox.Option
-                          key={user.id}
-                          value={user}
-                          className="cursor-pointer select-none px-3 py-2 dark:data-[focus]:bg-gray-800 data-[focus]:bg-white"
-                        >
-                          {({ selected }) => (
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <img
-                                  src={imgProfile}
-                                  alt={user.fullName}
-                                  className="w-8 h-8 rounded-full"
-                                />
+                          <ChevronUpDownIcon className="absolute right-2 top-3 h-5 w-5 text-gray-500" />
+                        </Listbox.Button>
 
-                                <span>{user.fullName}</span>
-                              </div>
+                        <Listbox.Options className="absolute z-10  mt-1 max-h-60 w-full overflow-auto bg-gray-200 rounded-lg dark:text-white dark:bg-gray-900 shadow-lg border">
+                          {users.map((user) => (
+                            <Listbox.Option
+                              key={user.id}
+                              value={user.fullName}
+                              className="cursor-pointer select-none px-3 py-2 dark:data-[focus]:bg-gray-800 data-[focus]:bg-white"
+                            >
+                              {({ selected }) => (
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <img
+                                      src={profileImg}
+                                      alt={user.fullName}
+                                      className="w-8 h-8 rounded-full"
+                                    />
 
-                              {selected && (
-                                <CheckIcon className="h-5 w-5 text-indigo-600" />
+                                    <span>{user.fullName}</span>
+                                  </div>
+
+                                  {selected && (
+                                    <CheckIcon className="h-5 w-5 text-indigo-600" />
+                                  )}
+                                </div>
                               )}
-                            </div>
-                          )}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </div>
-                </Listbox>
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </div>
+                    </Listbox>
+                  )}
+                />
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Priority Ranking
-                </label>
-                <select
-                  name="priority"
-                  value={priority}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
-                >
-                  <option value="LOW"> Low</option>
-                  <option value="MEDIUM"> Medium</option>
-                  <option value="HIGH"> High</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                  Due Date Selection
+                  Due Date Selection <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="datetime-local"
-                  name="dueDate"
-                  value={dueDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-500/80 transition-all"
+                  {...register("dueDate", {
+                    required: "Deadline is required",
+                  })}
+                  className={`w-full px-4 py-3 
+                  bg-gray-50/50 dark:bg-gray-800/40 border
+                   dark:border-gray-800
+                    rounded-xl text-gray-900 
+                   dark:text-white 
+                   text-sm font-semibold focus:outline-none
+                    focus:ring-2 
+                    focus:ring-orange-500/80 transition-all  ${errors.dueDate ? "border-red-500 bg-red-50" : "border-gray-200"}`}
                 />
+                {errors.dueDate && (
+                  <span className="text-red-500 text-sm mb-4 block">
+                    {errors.dueDate.message}
+                  </span>
+                )}
               </div>
             </div>
 

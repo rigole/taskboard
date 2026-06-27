@@ -49,8 +49,11 @@ public class TaskService {
         User taskAssignee = userRepository
                 .findByFullNameEqualsIgnoreCase(taskRequest.getAssignee())
                 .orElseThrow(() -> new RuntimeException("Assignee not found"));
-        Columns columnTask = columnRepository.findByNameEqualsIgnoreCase(taskRequest.getColumn())
+        Columns columnTask = columnRepository.findById(taskRequest.getColumn())
                 .orElseThrow(() -> new RuntimeException("Column not found"));
+
+
+        Integer maxPosition = taskRepository.findMaxPositionByColumn(columnTask.getId());
 
 
         Task task = Task.builder()
@@ -60,7 +63,7 @@ public class TaskService {
                 .title(taskRequest.getTitle())
                 .assigneeUser(taskAssignee)
                 .dueDate(taskRequest.getDueDate())
-                .position(taskRequest.getPosition())
+                .position(maxPosition + 1)
                 .column(columnTask)
                 .updatedAt(taskRequest.getUpdatedAt())
                 .build();
@@ -70,18 +73,24 @@ public class TaskService {
     }
 
     @Transactional
+    public TaskResponse getTaskById(UUID id, User user) {
+        Task task = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("task not found"));
+        if (!task.getCreatedBy().getId().equals(user.getId())) {
+            throw new RuntimeException("User not authorized");
+        }
+        return mapToResponse(task);
+    }
+
+    @Transactional
     public TaskResponse updateTask(UUID taskId, TaskRequest taskRequest, User user) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
         if (!task.getCreatedBy().getId().equals(user.getId())) {
             throw new RuntimeException("User not authorized");
         }
 
-
-        if (taskRequest.getColumn() != null) {
-            Columns columnTask = columnRepository.findByNameEqualsIgnoreCase(taskRequest.getColumn())
-                    .orElseThrow(() -> new RuntimeException("Column not found"));
-            task.setColumn(columnTask);
-        }
+        Columns columnTask = columnRepository.findById(taskRequest.getColumn())
+                .orElseThrow(() -> new RuntimeException("Column not found"));
+        task.setColumn(columnTask);
 
         if (taskRequest.getAssignee() != null) {
             User taskAssignee = userRepository
@@ -90,13 +99,15 @@ public class TaskService {
             task.setAssigneeUser(taskAssignee);
         }
 
+        Integer maxPosition = taskRepository.findMaxPositionByColumn(columnTask.getId());
+
 
         task.setDescription(taskRequest.getDescription());
         task.setTitle(taskRequest.getTitle());
         task.setPriority(taskRequest.getPriority());
         task.setTitle(taskRequest.getTitle());
         task.setUpdatedAt(taskRequest.getUpdatedAt());
-        task.setPosition(taskRequest.getPosition());
+        task.setPosition(maxPosition + 1);
         Task taskUpdated = taskRepository.saveAndFlush(task);
         return mapToResponse(taskUpdated);
 
@@ -198,6 +209,7 @@ public class TaskService {
                 .createdAt(task.getCreatedAt())
                 .createdBy(task.getCreatedBy().getFullName())
                 .title(task.getTitle())
+                .column(task.getColumn().getId())
                 .priority(task.getPriority())
                 .dueDate(task.getDueDate())
                 .position(task.getPosition())

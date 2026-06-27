@@ -1,4 +1,4 @@
-export interface Comment {
+export interface CommentResponse {
   id: string;
   content: string;
   author: string;
@@ -6,12 +6,8 @@ export interface Comment {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export interface TaskRequest {
-  title: string;
-  description: string;
-  priority: "LOW" | "MEDIUM" | "HIGH";
-  dueDate: string;
-  targetColumnId: string;
-  assigneeId: string;
+export interface CommentRequest {
+  content: string;
+  updatedAt?: Date;
+  taskId: string;
 }

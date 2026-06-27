@@ -9,8 +9,8 @@ import {
 
 import BoardModal from "./BoardModal";
 import type { BoardResponse } from "../types/board";
-import { useBoardState } from "../store/boardStore";
 import { useNavigate } from "react-router-dom";
+import { useColumnState } from "../store/columnStore";
 interface HeaderProps {
   userName: string | null;
 }
@@ -20,10 +20,15 @@ export const Header = ({ userName }: HeaderProps) => {
   const { darkMode, toggleTheme } = useThemeStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const currentBoard = useBoardState((state) => state.board);
+  const currentColumn = useColumnState((state) => state.columns);
   const [selectedBoard, setSelectedBoard] = useState<BoardResponse | null>(
     null,
   );
+  let columnsChecker = false;
+
+  if (currentColumn.length > 0) {
+    columnsChecker = true;
+  }
 
   const openTaskForm = () => {
     navigate("/task/new");
@@ -70,7 +75,7 @@ export const Header = ({ userName }: HeaderProps) => {
             Create Board
           </button>
 
-          {currentBoard && (
+          {columnsChecker && (
             <button
               onClick={openTaskForm}
               className="bg-indigo-600 text-white
@@ -107,7 +112,7 @@ export const Header = ({ userName }: HeaderProps) => {
           >
             Add Board
           </button>
-          {currentBoard && (
+          {columnsChecker && (
             <button
               onClick={openTaskForm}
               className="bg-indigo-600 hover:bg-indigo-500 

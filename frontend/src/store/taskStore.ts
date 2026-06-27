@@ -10,7 +10,8 @@ interface taskState {
   users: User[] | [];
   addTask: (data: TaskRequest) => Promise<void>;
   getUsersForTask: () => Promise<void>;
-  updateTask: (id: string, data: TaskRequest) => Promise<void>;
+  updateTask: (id: string, data: TaskRequest) => Promise<TaskRequest>;
+  getTask: (id: string) => Promise<TaskRequest>;
   error: string | null;
 }
 
@@ -39,6 +40,21 @@ export const useTaskState = create<taskState>((set) => ({
     try {
       const response = await taskService.updateTask(id, data);
       set({ loading: false, error: null, task: response });
+      return response;
+    } catch (error: unknown) {
+      let serverMessage = "Invalid data or server error";
+      if (axios.isAxiosError(error)) {
+        serverMessage = error.response?.data?.message ?? serverMessage;
+      }
+      set({ loading: false, error: serverMessage });
+      throw error;
+    }
+  },
+  getTask: async (id: string) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await taskService.getTask(id);
+      return response;
     } catch (error: unknown) {
       let serverMessage = "Invalid data or server error";
       if (axios.isAxiosError(error)) {
