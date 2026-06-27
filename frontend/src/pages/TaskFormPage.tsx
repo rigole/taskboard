@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import type { Comment } from "../types/comment";
+import type { CommentRequest, CommentResponse } from "../types/comment";
 import type { TaskRequest } from "../types/task";
 import { useTaskState } from "../store/taskStore";
 import profileImg from "../assets/profile.png";
@@ -43,7 +43,7 @@ export const TaskFormPage = () => {
       : undefined;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<CommentResponse[]>([]);
   const [newComment, setNewComment] = useState("");
 
   const openBoardDetail = (boardId: string) => {
@@ -132,41 +132,13 @@ export const TaskFormPage = () => {
 
     if (isEditMode) {
       getTaskById();
-      const simulatedFetchedTask = {
-        title: "Task 1",
-        description: "this is the first task ever",
-        priority: "HIGH" as const,
-        dueDate: "2026-06-30T12:00",
-        targetColumnId: "57f0cca5-1d5f-4036-97c1-67567e83efd8",
-        assigneeId: "user-uuid-123",
-      };
-      const simulatedComments: Comment[] = [
-        {
-          id: "c1",
-          author: "Jane Smith",
-          content:
-            "I've started investigating the backend logs for this issue.",
-          createdAt: new Date(),
-          taskId: taskId,
-          updatedAt: new Date(),
-        },
-        {
-          id: "c2",
-          author: "John Doe",
-          content:
-            "Awesome, let me know if you need any database script backups.",
-          createdAt: new Date(),
-          taskId: taskId,
-          updatedAt: new Date(),
-        },
-      ];
     }
   }, [taskId, isEditMode, currentBoard, location.search]);
 
   const handleAddComment = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-
+    /*
     const freshlyCreatedComment: Comment = {
       id: Math.random().toString(),
       author: "John Doe",
@@ -177,6 +149,7 @@ export const TaskFormPage = () => {
     };
 
     setComments((prev) => [...prev, freshlyCreatedComment]);
+    */
     setNewComment("");
   };
 
