@@ -3,11 +3,14 @@ package com.taskboardbackend.taskboardbackend.service;
 import com.taskboardbackend.taskboardbackend.dto.request.CommentsRequest;
 import com.taskboardbackend.taskboardbackend.dto.response.CommentsResponse;
 import com.taskboardbackend.taskboardbackend.model.Comment;
+import com.taskboardbackend.taskboardbackend.model.Task;
 import com.taskboardbackend.taskboardbackend.model.User;
 import com.taskboardbackend.taskboardbackend.repository.CommentRepository;
+import com.taskboardbackend.taskboardbackend.repository.TaskRepository;
 import com.taskboardbackend.taskboardbackend.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +19,17 @@ import java.util.stream.Collectors;
 
 
 @Service
-@AllArgsConstructor
-@RequiredArgsConstructor
 public class CommentService {
-    private CommentRepository commentRepository;
-    private UserRepository userRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
+
+    @Autowired
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, TaskRepository taskRepository) {
+        this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
+        this.taskRepository = taskRepository;
+    }
 
 
     public List<CommentsResponse> getAllTaskComments(UUID taskId) {
@@ -35,10 +44,12 @@ public class CommentService {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        Task task = taskRepository.findById(commentsRequest.getTaskId()).orElseThrow(() -> new RuntimeException("Task not found"));
 
         Comment comment = Comment.builder()
                 .user(user)
                 .content(commentsRequest.getContent())
+                .task(task)
                 .updatedAt(commentsRequest.getUpdatedAt())
                 .build();
 
@@ -70,7 +81,7 @@ public class CommentService {
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
                 .taskId(comment.getTask().getId())
-                .userId(comment.getUser().getId())
+                .author(comment.getUser().getFullName())
                 .build();
     }
 

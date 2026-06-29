@@ -6,21 +6,27 @@ import type { CommentRequest, CommentResponse } from "../types/comment";
 interface commentState {
   loading: boolean;
   error: string | null;
+  comments: CommentResponse[] | [];
   addComment: (data: CommentRequest) => Promise<CommentResponse>;
-  //updateComment: (id: string, data: CommentRequest) => Promise<CommentResponse>;
+  getTaskComments: (taskId: string) => Promise<void>;
 }
 
 export const useCommentState = create<commentState>((set) => ({
   loading: false,
   error: null,
+  comments: [],
   addComment: async (data: CommentRequest) => {
     set({ loading: true, error: null });
     try {
       const response = await commentService.addComment(data);
-      set({ loading: false, error: null });
+      set((state) => ({
+        loading: false,
+        error: null,
+        comments: [...state.comments, response],
+      }));
       return response;
     } catch (error) {
-        let serverMessage = "Invalid data or server error";
+      let serverMessage = "Invalid data or server error";
       if (axios.isAxiosError(error)) {
         serverMessage = error.response?.data?.message ?? serverMessage;
       }
@@ -28,5 +34,18 @@ export const useCommentState = create<commentState>((set) => ({
       throw error;
     }
   },
-  //updateComment: async () => {},
+  getTaskComments: async (taskId: string) => {
+    set({ loading: true, error: null });
+    try {
+      const comments = await commentService.getTaskComments(taskId);
+      set({ comments, loading: false });
+    } catch (error: unknown) {
+      let serverMessage = "Invalid data or server error";
+      if (axios.isAxiosError(error)) {
+        serverMessage = error.response?.data?.message ?? serverMessage;
+      }
+      set({ loading: false, error: serverMessage });
+      throw error;
+    }
+  },
 }));

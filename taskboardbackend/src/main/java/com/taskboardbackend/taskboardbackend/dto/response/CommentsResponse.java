@@ -17,5 +17,5 @@ public class CommentsResponse {
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
     private UUID taskId;
-    private UUID userId;
+    private String author;
 }

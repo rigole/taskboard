@@ -2,15 +2,18 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import type { TaskRequest } from "../types/task";
 import { useTaskState } from "../store/taskStore";
+import { useCommentState } from "../store/commentStore";
 import profileImg from "../assets/profile.png";
 import { Listbox } from "@headlessui/react";
-import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/24/outline";
+
+import { ChevronUpDownIcon, CheckIcon, PencilIcon,TrashIcon } from "@heroicons/react/24/outline";
 import { Header } from "../components/Header";
 import { useBoardState } from "../store/boardStore";
 import { useColumnState } from "../store/columnStore";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import toast from "react-hot-toast";
+import type { CommentRequest } from "../types/comment";
 
 export const TaskFormPage = () => {
   const navigate = useNavigate();
@@ -27,6 +30,10 @@ export const TaskFormPage = () => {
   const addTask = useTaskState((state) => state.addTask);
   const updateTask = useTaskState((state) => state.updateTask);
   const users = useTaskState((state) => state.users);
+  const comments = useCommentState((state) => state.comments);
+  const addComment = useCommentState((state) => state.addComment);
+  const storedImage = localStorage.getItem("image");
+  const getTaskComments = useCommentState((state) => state.getTaskComments);
   const {
     register,
     control,
@@ -35,10 +42,12 @@ export const TaskFormPage = () => {
     formState: { errors },
   } = useForm<TaskRequest>();
 
-     
+  const imgProfile =
+    storedImage && storedImage !== "null" && storedImage !== "undefined"
+      ? storedImage
+      : profileImg;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
- // const [comments, setComments] = useState<CommentResponse[]>([]);
   const [newComment, setNewComment] = useState("");
 
   const openBoardDetail = (boardId: string) => {
@@ -50,6 +59,21 @@ export const TaskFormPage = () => {
       await getUsersForTask();
     } catch (error) {
       console.error("Failed to load boards:", error);
+    }
+  };
+
+  const handleDeleteComment = (commentId:string) => {
+
+  }
+  const handleEditComment = (commentId:CommentRequest) => {}
+
+  const loadTaskComments = async () => {
+    try {
+      if (taskId) {
+        await getTaskComments(taskId);
+      }
+    } catch (error) {
+      console.log("Failed to load tasks", error);
     }
   };
 
@@ -107,7 +131,6 @@ export const TaskFormPage = () => {
     try {
       if (taskId) {
         const task = await getTask(taskId);
-        console.log(task);
         reset({
           title: task?.title,
           description: task?.description,
@@ -124,29 +147,30 @@ export const TaskFormPage = () => {
   useEffect(() => {
     loadUsers();
     loadColumns();
-
+    loadTaskComments();
     if (isEditMode) {
       getTaskById();
     }
   }, [taskId, isEditMode, currentBoard, location.search]);
 
-  const handleAddComment = (e: React.MouseEvent) => {
+  const handleAddComment = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
-    
-    /*
-    const freshlyCreatedComment: Comment = {
-      id: Math.random().toString(),
-      author: "John Doe",
-      content: "Awesome, let me know if you need any database script backups.",
-      createdAt: new Date(),
-      taskId: "remkerrmkrtb",
-      updatedAt: new Date(),
-    };
 
-    setComments((prev) => [...prev, freshlyCreatedComment]);
-    */
-    setNewComment("");
+    try {
+      if (taskId) {
+        const payload: CommentRequest = {
+          content: newComment,
+          taskId: taskId,
+          updatedAt: new Date(),
+        };
+        await addComment(payload);
+        console.log(payload);
+        setNewComment("");
+      }
+    } catch (error) {
+      console.error("Failed to loads task", error);
+    }
   };
 
   return (
@@ -218,6 +242,82 @@ export const TaskFormPage = () => {
                 </label>
 
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                  {comments.map((comment, index) => {
+                    const initials = comment.author
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()
+                      .slice(0, 2);
+
+                    const avatarColors = [
+                      { bg: "bg-blue-50", text: "text-blue-700" },
+                      { bg: "bg-teal-50", text: "text-teal-700" },
+                      { bg: "bg-amber-50", text: "text-amber-700" },
+                      { bg: "bg-purple-50", text: "text-purple-700" },
+                    ];
+                    const color = avatarColors[index % avatarColors.length];
+
+                    return (
+                      <div
+                        key={comment.id}
+                        className="group flex gap-3 py-3 border-b border-gray-100 dark:border-gray-800/60 last:border-none"
+                      >
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 ${color.bg} ${color.text}`}
+                        >
+                          {initials}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                              {comment.author}
+                            </span>
+                            <span className="text-[10px] text-gray-400 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded px-1.5 py-0.5">
+                              #{index + 1}
+                            </span>
+                            <span className="text-[10px] text-gray-400 ml-auto">
+                              {comment.updatedAt
+                                ? new Date(
+                                    comment.updatedAt,
+                                  ).toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                  })
+                                : ""}
+                            </span>
+                          </div>
+
+                          <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                            {comment.content}
+                          </p>
+                          <div className="flex gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => handleEditComment(comment)}
+                              className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded-md transition-all"
+                            >
+                              <PencilIcon className="w-3 h-3" />
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteComment(comment.id)}
+                              className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 px-2 py-1 rounded-md transition-all"
+                            >
+                              <TrashIcon className="w-3 h-3" />
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {comments.length === 0 && (
+                    <p className="text-xs text-gray-400 italic">
+                      No comments posted yet.
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex gap-3 items-start pt-2">
@@ -229,6 +329,9 @@ export const TaskFormPage = () => {
                       type="text"
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleAddComment(e as any)
+                      }
                       placeholder="Add an update comment to this issue..."
                       className="w-full text-xs px-4 py-2.5 bg-gray-50/50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-900 dark:text-white"
                     />
@@ -306,7 +409,7 @@ export const TaskFormPage = () => {
                         <Listbox.Button className="relative w-full cursor-pointer rounded-lg border border-gray-200 bg-gray-200 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500/80  py-2 pl-3 pr-10 text-left shadow-sm">
                           <div className="flex  items-center gap-2">
                             <img
-                              src={profileImg}
+                              src={imgProfile}
                               className="w-8 h-8 rounded-full"
                             />
 
@@ -327,7 +430,7 @@ export const TaskFormPage = () => {
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-3">
                                     <img
-                                      src={profileImg}
+                                      src={imgProfile}
                                       alt={user.fullName}
                                       className="w-8 h-8 rounded-full"
                                     />
