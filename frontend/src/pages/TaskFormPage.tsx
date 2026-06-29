@@ -63,9 +63,12 @@ export const TaskFormPage = () => {
   };
 
   const handleDeleteComment = (commentId:string) => {
+    console.log(commentId)
 
   }
-  const handleEditComment = (commentId:CommentRequest) => {}
+  const handleEditComment = (commentId:CommentRequest) => {
+    console.log(commentId)
+  }
 
   const loadTaskComments = async () => {
     try {
