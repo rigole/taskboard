@@ -7,7 +7,12 @@ import { useCommentState } from "../store/commentStore";
 import profileImg from "../assets/profile.png";
 import { Listbox } from "@headlessui/react";
 
-import { ChevronUpDownIcon, CheckIcon, PencilIcon,TrashIcon } from "@heroicons/react/24/outline";
+import {
+  ChevronUpDownIcon,
+  CheckIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import { Header } from "../components/Header";
 import { useBoardState } from "../store/boardStore";
 import { useColumnState } from "../store/columnStore";
@@ -27,11 +32,13 @@ export const TaskFormPage = () => {
   const getUsersForTask = useTaskState((state) => state.getUsersForTask);
   const getTask = useTaskState((state) => state.getTask);
   const taskStateError = useTaskState((state) => state.error);
+  const commentStateError = useColumnState((state) => state.error);
   const addTask = useTaskState((state) => state.addTask);
   const updateTask = useTaskState((state) => state.updateTask);
   const users = useTaskState((state) => state.users);
   const comments = useCommentState((state) => state.comments);
   const addComment = useCommentState((state) => state.addComment);
+  const updateComment = useCommentState((state) => state.updateComment);
   const storedImage = localStorage.getItem("image");
   const getTaskComments = useCommentState((state) => state.getTaskComments);
   const {
@@ -49,6 +56,8 @@ export const TaskFormPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState("");
 
   const openBoardDetail = (boardId: string) => {
     navigate(`/boards/${boardId}`);
@@ -62,10 +71,40 @@ export const TaskFormPage = () => {
     }
   };
 
-  const handleDeleteComment = (commentId:string) => {
+  const handleDeleteComment = (commentId: string) => {};
+  const handleEditComment = (comment: CommentResponse) => {
+    setEditingCommentId(comment.id);
+    setEditDraft(comment.content);
+  };
 
-  }
-  const handleEditComment = (commentId:CommentRequest) => {}
+  const handleConfirmEdit = async (comment: CommentResponse) => {
+    if (!editDraft.trim()) return;
+
+    try {
+      if (taskId && comment.id) {
+        const payload = {
+          content: editDraft,
+          taskId: taskId,
+          updatedAt: new Date(),
+        };
+        console.log(payload);
+        await updateComment(comment.id, payload);
+        if (!commentStateError) {
+          toast.success("Comment Updated successfully.");
+        }
+      }
+    } catch (error) {
+      toast.error(commentStateError);
+      console.error("Registration failed:", error);
+    }
+    setEditingCommentId(null);
+    setEditDraft("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditDraft("");
+  };
 
   const loadTaskComments = async () => {
     try {
@@ -165,11 +204,14 @@ export const TaskFormPage = () => {
           updatedAt: new Date(),
         };
         await addComment(payload);
-        console.log(payload);
+        if (!commentStateError) {
+          toast.success("comment added successfully.");
+        }
         setNewComment("");
       }
     } catch (error) {
-      console.error("Failed to loads task", error);
+      toast.error(commentStateError);
+      console.error("Registration failed:", error);
     }
   };
 
@@ -290,25 +332,55 @@ export const TaskFormPage = () => {
                             </span>
                           </div>
 
-                          <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-                            {comment.content}
-                          </p>
-                          <div className="flex gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => handleEditComment(comment)}
-                              className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded-md transition-all"
-                            >
-                              <PencilIcon className="w-3 h-3" />
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteComment(comment.id)}
-                              className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 px-2 py-1 rounded-md transition-all"
-                            >
-                              <TrashIcon className="w-3 h-3" />
-                              Delete
-                            </button>
-                          </div>
+                          {editingCommentId === comment.id ? (
+                            <div>
+                              <input
+                                type="text"
+                                value={editDraft}
+                                onChange={(e) => setEditDraft(e.target.value)}
+                                autoFocus
+                                className="w-full text-xs px-3 py-2 bg-gray-50/50 dark:bg-gray-800/40 border border-orange-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-gray-900 dark:text-white"
+                              />
+                              <div className="flex gap-2 mt-2">
+                                <button
+                                  onClick={() => handleConfirmEdit(comment)}
+                                  className="text-[11px] font-medium text-white bg-orange-500 hover:bg-orange-600 px-2.5 py-1 rounded-md transition-colors"
+                                >
+                                  Confirm
+                                </button>
+                                <button
+                                  onClick={handleCancelEdit}
+                                  className="text-[11px] font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-2.5 py-1 rounded-md transition-colors"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                              {comment.content}
+                            </p>
+                          )}
+
+                          
+                          {editingCommentId !== comment.id && (
+                            <div className="flex gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => handleEditComment(comment)}
+                                className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 px-2 py-1 rounded-md transition-all"
+                              >
+                                <PencilIcon className="w-3 h-3" />
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteComment(comment.id)}
+                                className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 px-2 py-1 rounded-md transition-all"
+                              >
+                                <TrashIcon className="w-3 h-3" />
+                                Delete
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     );

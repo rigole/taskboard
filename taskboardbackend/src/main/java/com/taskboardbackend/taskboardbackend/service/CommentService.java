@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,6 +57,7 @@ public class CommentService {
         return mapToResponse(commentRepository.save(comment));
     }
 
+    @Transactional
     public CommentsResponse updateComment(UUID commentId, CommentsRequest commentsRequest, User user) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RuntimeException("Comment not found"));
         if (!comment.getUser().getId().equals(user.getId())) {
