@@ -38,6 +38,7 @@ export const TaskFormPage = () => {
   const users = useTaskState((state) => state.users);
   const comments = useCommentState((state) => state.comments);
   const addComment = useCommentState((state) => state.addComment);
+  const deleteComment = useCommentState((state) => state.deleteComment);
   const updateComment = useCommentState((state) => state.updateComment);
   const storedImage = localStorage.getItem("image");
   const getTaskComments = useCommentState((state) => state.getTaskComments);
@@ -71,7 +72,16 @@ export const TaskFormPage = () => {
     }
   };
 
-  const handleDeleteComment = (commentId: string) => {};
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      await deleteComment(commentId);
+      if (!commentStateError) {
+        toast.success("Comment Updated successfully.");
+      }
+    } catch (error) {
+      toast.error(commentStateError);
+    }
+  };
   const handleEditComment = (comment: CommentResponse) => {
     setEditingCommentId(comment.id);
     setEditDraft(comment.content);
@@ -362,7 +372,6 @@ export const TaskFormPage = () => {
                             </p>
                           )}
 
-                          
                           {editingCommentId !== comment.id && (
                             <div className="flex gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button

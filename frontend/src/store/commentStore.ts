@@ -9,6 +9,7 @@ interface commentState {
   comments: CommentResponse[] | [];
   addComment: (data: CommentRequest) => Promise<CommentResponse>;
   updateComment: (id: string, data: CommentRequest) => Promise<CommentResponse>;
+  deleteComment: (id: string) => Promise<void>;
   getTaskComments: (taskId: string) => Promise<void>;
 }
 
@@ -59,6 +60,24 @@ export const useCommentState = create<commentState>((set) => ({
         comments: state.comments.map((c) => (c.id === id ? response : c)),
       }));
       return response;
+    } catch (error) {
+      let serverMessage = "Invalid data or server error";
+      if (axios.isAxiosError(error)) {
+        serverMessage = error.response?.data?.message ?? serverMessage;
+      }
+      set({ loading: false, error: serverMessage });
+      throw error;
+    }
+  },
+  deleteComment: async (id: string) => {
+    set({ loading: true, error: null });
+    try {
+      await commentService.deleteComment(id);
+      set((state) => ({
+        loading: false,
+        error: null,
+        comments: state.comments.filter((c) => c.id !== id),
+      }));
     } catch (error) {
       let serverMessage = "Invalid data or server error";
       if (axios.isAxiosError(error)) {
