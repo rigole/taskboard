@@ -105,6 +105,7 @@ public class TaskService {
         task.setDescription(taskRequest.getDescription());
         task.setTitle(taskRequest.getTitle());
         task.setPriority(taskRequest.getPriority());
+        task.setDueDate(taskRequest.getDueDate());
         task.setTitle(taskRequest.getTitle());
         task.setUpdatedAt(taskRequest.getUpdatedAt());
         task.setPosition(maxPosition + 1);

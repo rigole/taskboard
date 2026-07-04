@@ -26,10 +26,13 @@ import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import TaskDrawer from "./TaskDrawer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useBoardState } from "../../store/boardStore";
 
 export const TaskCard = ({ task }: TaskCardProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const currentBoard = useBoardState((state) => state.board);
+
   const {
     attributes,
     listeners,
@@ -108,7 +111,7 @@ export const TaskCard = ({ task }: TaskCardProps) => {
               <MenuItem>
                 {({ focus }) => (
                   <button
-                    onClick={() => navigate(`/tasks/${task.id}/edit`)}
+                    onClick={() => navigate(`/tasks/${task.id}/edit`, { state: { boardId: currentBoard?.id } })}
                     className={`${
                       focus ? "bg-gray-100 dark:bg-gray-700" : ""
                     } flex w-full text-gray-900 dark:text-white items-center gap-3 rounded-lg px-3 py-2 text-sm`}

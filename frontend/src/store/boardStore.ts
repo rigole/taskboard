@@ -8,7 +8,7 @@ interface BoardState {
   board: BoardResponse | null;
   getUserBoards: () => Promise<void>;
   addBoard: (data: BoardRequest) => Promise<void>;
-  getBoardById: (id: string) => Promise<void>;
+  getBoardById: (id: string) => Promise<BoardResponse>;
   updateBoard: (id: string, data: BoardRequest) => Promise<void>;
   deleteBoard: (id: string) => Promise<void>;
   error: string | null;
@@ -55,6 +55,7 @@ export const useBoardState = create<BoardState>((set) => ({
     try {
       const response = await boardService.getBoardById(id);
       set({ loading: false, error: null, board: response });
+      return response;
     } catch (error: unknown) {
       let serverMessage = "Invalid data or server error";
       if (axios.isAxiosError(error)) {

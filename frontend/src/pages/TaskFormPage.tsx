@@ -27,6 +27,8 @@ export const TaskFormPage = () => {
   const isEditMode = !!taskId;
   const userName = localStorage.getItem("username");
   const currentBoard = useBoardState((state) => state.board);
+  const boardId = location.state?.boardId;
+  const getBoardById = useBoardState((state) => state.getBoardById);
   const columns = useColumnState((state) => state.columns);
   const getBoardColumns = useColumnState((state) => state.getBoardColumns);
   const getUsersForTask = useTaskState((state) => state.getUsersForTask);
@@ -131,7 +133,11 @@ export const TaskFormPage = () => {
     if (isEditMode) {
       try {
         if (taskId) {
-          updateTask(taskId, task);
+          const data = {
+            ...task,
+            dueDate: `${task.dueDate}:00`,
+          };
+          updateTask(taskId, data);
           if (!taskStateError) {
             toast.success("task Updated successfully.");
             if (currentBoard) {
@@ -170,7 +176,8 @@ export const TaskFormPage = () => {
   const loadColumns = async () => {
     try {
       if (currentBoard) {
-        await getBoardColumns(currentBoard?.id);
+        const columns = await getBoardColumns(currentBoard?.id);
+        console.log("Columns loaded:", columns);
       }
     } catch (error) {
       console.error("Failed to loads columns", error);
@@ -193,14 +200,26 @@ export const TaskFormPage = () => {
       console.error("Failed to loads task", error);
     }
   };
+
+  useEffect(() => {
+    if (boardId) {
+      getBoardById(boardId);
+    }
+  }, [boardId]);
+  useEffect(() => {
+    if (currentBoard?.id) {
+      console.log("Current Board ID:", currentBoard.id);
+      loadColumns();
+    }
+  }, [currentBoard?.id]);
+
   useEffect(() => {
     loadUsers();
-    loadColumns();
     loadTaskComments();
     if (isEditMode) {
       getTaskById();
     }
-  }, [taskId, isEditMode, currentBoard, location.search]);
+  }, [taskId, isEditMode, location.search]);
 
   const handleAddComment = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -440,7 +459,6 @@ export const TaskFormPage = () => {
                 >
                   {columns?.map((column) => (
                     <option key={column.id} value={column.id}>
-                      {" "}
                       {column.name}
                     </option>
                   ))}
