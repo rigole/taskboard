@@ -18,7 +18,7 @@ import { useColumnState } from "../store/columnStore";
 import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import toast from "react-hot-toast";
-import type { CommentRequest } from "../types/comment";
+import type { CommentRequest, CommentResponse } from "../types/comment";
 
 export const TaskFormPage = () => {
   const navigate = useNavigate();
