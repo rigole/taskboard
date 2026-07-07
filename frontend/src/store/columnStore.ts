@@ -9,7 +9,7 @@ interface ColumnState {
   loading: boolean;
   error: string | null;
   setColumns: (columns: ColumnResponse[]) => void;
-  getBoardColumns: (boardId: string) => Promise<void>;
+  getBoardColumns: (boardId: string) => Promise<ColumnResponse[]>;
   createColumn: (data: ColumnRequest) => Promise<void>;
   updateColumn: (
     columnId: string,
@@ -27,8 +27,9 @@ export const useColumnState = create<ColumnState>((set) => ({
   getBoardColumns: async (boardId: string) => {
     set({ loading: true, error: null });
     try {
-      const columns = await columnService.getBoardColumns(boardId);
-      set({ columns, loading: false });
+      const response = await columnService.getBoardColumns(boardId);         
+      set({ columns: response, loading: false });
+      return response;
     } catch (error: unknown) {
       let serverMessage = "Invalid data or server error";
       if (axios.isAxiosError(error)) {
@@ -128,7 +129,6 @@ export const useColumnState = create<ColumnState>((set) => ({
 
       const targetPosition = moveTaskData.position ?? targetColumn.tasks.length;
 
- 
       const updatedColumns = state.columns.map((col) => {
         const isSource = String(col.id) === String(sourceColumn.id);
         const isTarget = String(col.id) === String(targetColumn.id);

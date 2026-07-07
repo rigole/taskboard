@@ -11,6 +11,11 @@ const getTaskComments = async (taskId: string): Promise<CommentResponse[]> => {
   return response.data;
 };
 
+const deleteComment = async (id: string): Promise<void> => {
+  const response = await api.delete(`/comments/${id}`);
+  return response.data;
+};
+
 const updateComment = async (
   id: string,
   data: CommentRequest,
@@ -23,4 +28,5 @@ export const commentService = {
   addComment,
   getTaskComments,
   updateComment,
+  deleteComment
 };

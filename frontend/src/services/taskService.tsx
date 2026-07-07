@@ -16,7 +16,7 @@ const updateTask = async (
 };
 
 const getTask = async (taskId: string): Promise<TaskResponse> => {
-  const response = await api.get(`/tasks/${taskId}`);
+  const response = await api.get(`/tasks/${taskId}`); 
   return response.data;
 };
 

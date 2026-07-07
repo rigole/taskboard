@@ -21,9 +21,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -68,7 +70,7 @@ public class BoardServiceTest {
     }
 
     @Test
-    @DisplayName("Should Create Board Successfull")
+    @DisplayName("Should Create Board Successfully")
     void shouldCreateBoard() {
         when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(mockUser));
         when(boardRepository.save(any(Board.class))).thenReturn(mockBoard);
@@ -80,6 +82,24 @@ public class BoardServiceTest {
         assertEquals("Test description", response.getDescription());
 
         verify(boardRepository, times(1)).save(any(Board.class));
+    }
+
+    @Test
+    @DisplayName("Should update board")
+    void shouldUpdateBoard() {
+        UUID boardId = mockBoard.getId();
+        LocalDateTime updateDate = LocalDateTime.now();
+        mockBoardRequest.setName("Updated Board Name");
+        mockBoardRequest.setDescription("Updated description");
+        mockBoardRequest.setUpdateDate(updateDate);
+
+        when(boardRepository.findById(boardId)).thenReturn(Optional.of(mockBoard));
+        when(boardRepository.save(any(Board.class))).thenReturn(mockBoard);
+
+        BoardResponse response = boardService.updateBoard(boardId, mockBoardRequest, mockUser);
+
+        assertThat(response).isNotNull();
+
     }
 
     @Test
@@ -96,5 +116,32 @@ public class BoardServiceTest {
 
         verify(boardRepository, times(1)).findAllByUserIdOrderByCreatedAtDesc(mockUser.getId());
     }
+
+    @Test
+    @DisplayName("Should throws Exception when board not found")
+    void shouldThrowExceptionWhenBoardNotFound() {
+        UUID boardId = UUID.randomUUID();
+        when(userRepository.findById(boardId)).thenReturn(Optional.empty());
+        assertThrows(RuntimeException.class, () -> boardService.updateBoard(boardId, mockBoardRequest, mockUser));
+        verify(boardRepository, never()).save(any(Board.class));
+    }
+
+    @Test
+    @DisplayName("Should throws Exception when user does not own board")
+    void shouldThrowExceptionWhenUserDoesNotOwnBoard() {
+        UUID boardId = mockBoard.getId();
+        User anotherUser = User.builder()
+                .id(UUID.randomUUID())
+                .email("other@test.com")
+                .password("password")
+                .role("USER")
+                .build();
+
+        when(boardRepository.findById(boardId)).thenReturn(Optional.of(mockBoard));
+        assertThrows(RuntimeException.class, () -> boardService.updateBoard(boardId, mockBoardRequest, anotherUser));
+
+        verify(boardRepository, never()).save(any(Board.class));
+    }
+
 
 }
