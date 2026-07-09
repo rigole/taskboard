@@ -794,10 +794,10 @@ This project is licensed under the MIT License - see `LICENSE` file for details.
 - [x] Backend structure
 - [x] Database schema
 - [x] Security setup
-- [ ] API endpoints (create controllers & services)
-- [ ] Frontend components
-- [ ] Integration
-- [ ] Testing
+- [x] API endpoints (create controllers & services)
+- [x] Frontend components
+- [x] Integration
+- [x] Testing
 - [ ] Deployment
 
 ---
