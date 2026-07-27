@@ -41,9 +41,16 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
         ));
+
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedOrigins(
+                List.of(
+                        "http://localhost:5173",
+                        " https://taskboard-umber-ten.vercel.app/"
+                )
+
+        );
 
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
