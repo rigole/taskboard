@@ -1,14 +1,20 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17-jdk AS build
 
 WORKDIR /app
 
 COPY pom.xml .
 COPY src ./src
 
-RUN apk add --no-cache maven && mvn clean package -DskipTests
+RUN ./mvnw clean package -DskipTests
 
-COPY target/*.jar app.jar
+
+
+FROM eclipse-temurin:17-jre
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
