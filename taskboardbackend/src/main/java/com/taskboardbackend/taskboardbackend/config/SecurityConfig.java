@@ -2,6 +2,7 @@ package com.taskboardbackend.taskboardbackend.config;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -21,6 +22,8 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    @Value("${cors.allowed-origins}")
+    private List<String> allowedOrigins;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,9 +43,7 @@ public class SecurityConfig {
         ));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(
-                List.of("http://localhost:5173")
-        );
+        configuration.setAllowedOrigins(allowedOrigins);
 
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
