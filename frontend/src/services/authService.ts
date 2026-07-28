@@ -16,14 +16,9 @@ const login = async (data: LoginRequest): Promise<AuthResponse> => {
   return response.data;
 };
 
-const logout = (): void => {
-  localStorage.removeItem("token");
-};
-
 const authService = {
   register,
   login,
-  logout,
 };
 
 export default authService;
