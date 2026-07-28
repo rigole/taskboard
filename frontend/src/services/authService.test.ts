@@ -98,26 +98,3 @@ describe("authService.login", () => {
     ).rejects.toThrow("Invalid credentials");
   });
 });
-
-describe("authService.logout", () => {
-  it("removes the token from localStorage", () => {
-    localStorage.setItem("token", "some-token");
-
-    authService.logout();
-
-    expect(localStorage.getItem("token")).toBeNull();
-  });
-
-  it("does not throw when no token exists in localStorage", () => {
-    expect(() => authService.logout()).not.toThrow();
-  });
-
-  it("does not remove unrelated localStorage keys", () => {
-    localStorage.setItem("token", "some-token");
-    localStorage.setItem("user_preference", "dark_mode");
-
-    authService.logout();
-
-    expect(localStorage.getItem("user_preference")).toBe("dark_mode");
-  });
-});

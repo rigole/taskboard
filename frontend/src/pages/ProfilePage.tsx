@@ -120,6 +120,7 @@ export const ProfilePage = () => {
                   Create Board
                 </p>
               </div>
+              
             </div>
           </div>
         </section>

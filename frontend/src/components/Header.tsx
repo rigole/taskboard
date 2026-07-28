@@ -4,12 +4,14 @@ import {
   Bars3Icon,
   MoonIcon,
   SunIcon,
+  PowerIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 import BoardModal from "./BoardModal";
 import type { BoardResponse } from "../types/board";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useColumnState } from "../store/columnStore";
 interface HeaderProps {
   userName: string | null;
@@ -33,6 +35,13 @@ export const Header = ({ userName }: HeaderProps) => {
   const openTaskForm = () => {
     navigate("/task/new");
     console.log("Clicked for taks");
+  };
+
+  const logout = (): void => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    toast.success("User logged in successfully.");
+    navigate("/");
   };
 
   return (
@@ -73,6 +82,15 @@ export const Header = ({ userName }: HeaderProps) => {
              shadow-sm font-medium"
           >
             Create Board
+          </button>
+
+          <button
+            onClick={logout}
+            className="p-3 rounded-xl bg-red-500 hover:bg-red-600 cursor-pointer transition-colors duration-200"
+            aria-label="Logout"
+            title="Logout"
+          >
+            <PowerIcon className="w-5 h-5 text-white" />
           </button>
 
           {columnsChecker && (
@@ -136,6 +154,18 @@ export const Header = ({ userName }: HeaderProps) => {
                 Dark Mode
               </>
             )}
+          </button>
+
+          <button
+            onClick={logout}
+            className="flex items-center justify-center gap-2 p-3 rounded-lg  rounded-xl bg-red-500 hover:bg-red-600 cursor-pointer transition-colors duration-200 text-white"
+            aria-label="Logout"
+            title="Logout"
+          >
+            <>
+              <PowerIcon className="w-5 h-5 text-white" />
+              Log Out
+            </>
           </button>
         </div>
       )}
