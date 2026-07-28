@@ -11,7 +11,6 @@ interface AuthState {
   user: AuthResponse | null;
   register: (data: RegisterRequest) => Promise<void>;
   login: (data: LoginRequest) => Promise<void>;
-  logout: () => void;
   error: string | null;
   loading: boolean;
 }
@@ -55,9 +54,5 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ loading: false, error: serverMessage });
       throw error;
     }
-  },
-  logout: () => {
-    authService.logout();
-    set({ user: null, loading: false, error: null });
-  },
+  }
 }));
