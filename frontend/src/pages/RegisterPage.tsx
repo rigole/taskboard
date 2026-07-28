@@ -88,7 +88,14 @@ export const RegisterPage = () => {
             {errors.password.message}
           </span>
         )}
-        <button className="w-full bg-black text-white p-3 rounded">
+        <button
+          disabled={isLoading}
+          className={`w-full p-3 rounded text-white transition-colors ${
+            isLoading
+              ? "bg-gray-500 cursor-not-allowed opacity-70"
+              : "bg-black hover:bg-gray-900 cursor-pointer"
+          }`}
+        >
           {isLoading && (
             <svg
               className="animate-spin h-5 w-5 text-white"
